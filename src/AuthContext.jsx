@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
     const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -8,7 +8,7 @@ export const AuthProvider = ({children}) => {
     });
 
     const login = (username) => {
-        if (username === 'Admin'){
+        if (username === 'admin@gmail.com'){
             localStorage.setItem('auth','true');
             setIsLoggedIn(true);
             console.log(isLoggedIn)
