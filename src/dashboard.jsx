@@ -10,6 +10,8 @@ import './App.css'
 import BarChart from "./assets/components/BarChart"; // Import komponen BarChart
 import { barChartData } from './assets/data/barChartData'; // Sesuaikan path
 
+import FilterDropdown from './assets/components/FilterDropdown'; // Sesuaikan path
+
 import TimeSeriesChart from "./assets/components/TimeSeriesChart";
 import PieChart from "./assets/components/PieChart";
 import BarNegatif from './assets/components/BarNegatif';
@@ -26,6 +28,21 @@ import { useState, useMemo } from 'react';
 
 const Dashboard = () => {
   const [filterVersion, setFilterVersion] = useState('All Versions');
+
+  const [versions, setVersions] = useState([
+    'Version 1.0.1',
+    'Version 1.0.2',
+    'Version 1.0.3',
+    'Version 1.0.4',
+    'Version 2.0.1',
+  ]);
+
+  const [filters, setFilters] = useState({});
+
+  const handleApplyFilters = (newFilters) => {
+    setFilters(newFilters);
+    console.log('Applied Filters:', newFilters);
+  };
   
   // Data dummy untuk contoh
   const overviewData = [
@@ -91,15 +108,7 @@ const Dashboard = () => {
       <div className="border-b border-[#717171] my-6"></div>
       <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold">Version / Date</h2>
-              <select 
-                className="border rounded-md px-3 py-1 text-sm"
-                value={filterVersion}
-                // onChange={(e) => setFilterVersion(e.target.value)}
-              >
-                <option>All Versions</option>
-                <option>v1.0</option>
-                <option>v2.0</option>
-              </select>
+              <FilterDropdown versions={versions} onApplyFilters={handleApplyFilters} />
             </div>
 
       {/* Charts Section */}
