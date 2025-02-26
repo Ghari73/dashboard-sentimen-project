@@ -17,26 +17,27 @@ const TimeSeriesChart = () => {
           const date = new Date(dateString);
           return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
         };
-        
 
         // Data untuk sentiment negatif
         const trace1 = {
           type: "scatter",
           mode: "lines+markers",
-          name: "Negative Sentiment",
+          name: "Negative",
           x: negativeSentiment.map((item) => formatDate(item.review_date)),
           y: negativeSentiment.map((item) => item.sentiment_count),
-          line: { color: "#FF5733" },
+          line: { color: "#FF7F0E" }, // Warna lebih lembut
+          marker: { size: 6 },
         };
 
         // Data untuk sentiment positif
         const trace2 = {
           type: "scatter",
           mode: "lines+markers",
-          name: "Positive Sentiment",
+          name: "Positive",
           x: positiveSentiment.map((item) => formatDate(item.review_date)),
           y: positiveSentiment.map((item) => item.sentiment_count),
-          line: { color: "#33FF57" },
+          line: { color: "#1F77B4" }, // Warna biru profesional
+          marker: { size: 6 },
         };
 
         setData([trace1, trace2]);
@@ -45,21 +46,31 @@ const TimeSeriesChart = () => {
   }, []);
 
   return (
-    <div className="bg-white p-6 shadow-md rounded-md flex">
-      <Plot
-        data={data}
-        layout={{
-    title: "Sentiment Analysis Over Time",
-    xaxis: { 
-      title: "Date",
-      tickformat: "%Y-%m-%d" // Hanya tampilkan tanggal
-    },
-    yaxis: { title: "Sentiment Count" }
-  }}
-  style={{ width: "100%", height: "100%" }}
-/>
-
-    </div>
+    <Plot
+      data={data}
+      layout={{
+        xaxis: {
+          title: "Date",
+          tickformat: "%Y-%m-%d",
+          showgrid: true,
+        },
+        height: 800,
+        yaxis: { title: "Sentiment Count", showgrid: true },
+        paper_bgcolor: "white", 
+        margin: { l: 40, r: 10, t: 30, b: 30 },
+        showlegend: true,
+        legend: {
+          x: 0.5, 
+          y: -0.05, 
+          xanchor: "center",
+          yanchor: "top",
+          orientation: "h"
+        }
+        }}
+        config={{ responsive: true, displayModeBar: false }}
+        style={{ width: "100%"}}
+        
+    />
   );
 };
 

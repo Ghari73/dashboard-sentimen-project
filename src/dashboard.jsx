@@ -91,10 +91,10 @@ const Dashboard = () => {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Line Chart Placeholder */}
-        <div className="bg-red-300 p-6 rounded-lg col-span-2 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">Sentiment frekuensi over time</h2>
+        <div className="bg-white p-6 rounded-lg col-span-2 shadow-sm">
+          <h2 className="text-3xl font-bold mb-4 text-[#13A09B]">Sentiment Over Time</h2>
           {/* <div className="h-64 bg-gray-100 rounded animate-pulse"></div> */}
-          <TimeSeriesChart />
+          <TimeSeriesChart/>
         </div>
 
         {/* Filter and Bars */}
