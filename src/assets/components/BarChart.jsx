@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Plot from "react-plotly.js";
+import { fetchScoreFrequency } from "../../api/restApi";
 import { fetchScoreFrequency } from "../../api/restApi";
 
 const BarChart = () => {
@@ -44,9 +46,14 @@ const BarChart = () => {
       {loading ? (
           <p className="text-center text-gray-500">Loading...</p>
         ) : (
+      {loading ? (
+          <p className="text-center text-gray-500">Loading...</p>
+        ) : (
         <Plot
           data={[
             {
+              x: data.x,
+              y: data.y,
               x: data.x,
               y: data.y,
               type: "bar",
@@ -68,6 +75,7 @@ const BarChart = () => {
             yaxis: {
               title: "Frequency",
               tickmode: "linear",
+              dtick: 100, // Supaya angka di sumbu Y muncul dengan interval yang pas
               dtick: 100, // Supaya angka di sumbu Y muncul dengan interval yang pas
               showline: true, // Menampilkan garis utama sumbu Y
               zeroline: true,
