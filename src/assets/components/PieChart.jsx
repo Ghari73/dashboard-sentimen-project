@@ -48,37 +48,40 @@ const PieChart = () => {
   }, []);
 
   return (
-    <div className="bg-white p-6 shadow-md rounded-md w-full">
-      <Plot
-        data={data}
-        layout={{
-          title: {
-            text: "Sentiment Analysis Distribution",
-            font: { family: "Arial, sans-serif", size: 24, color: "#333" },
-          },
-          height: "100%",
-          width: "fit-content",
-          showlegend: true,
-          legend: {
-            font: { size: 14, color: "#555" },
-            orientation: "", // Letak legend horizontal
-            x: 0.3,
-            y: -0.2,
-          },
-          annotations: [
-            {
-              text: "Sentiment",
-              font: { size: 22, color: "#444" },
-              showarrow: false,
-              x: 0.5,
-              y: 0.5,
+    <div className="bg-red-300 p-6 shadow-md rounded-md w-full">
+      <div className="w-[90%]">
+        <Plot
+          data={data}
+          layout={{
+            title: {
+              text: "Sentiment Analysis Distribution",
+              font: { family: "Arial, sans-serif", size: 24, color: "#333" },
             },
-          ],
-          paper_bgcolor: "#f2f2f2", // Background chart
-          plot_bgcolor: "#ffffff", // Background area dalam chart
-        }}
-        style={{ width: "100%", height: "100%" }}
-      />
+            height: "100%",
+            width: 390,
+            showlegend: true,
+            legend: {
+              font: { size: 14, color: "#555" },
+              orientation: "", // Letak legend horizontal
+              x: 0.3,
+              y: -0.2,
+            },
+            annotations: [
+              {
+                text: "Sentiment",
+                font: { size: 22, color: "#444" },
+                showarrow: false,
+                x: 0.5,
+                y: 0.5,
+              },
+            ],
+            paper_bgcolor: "#f2f2f2", // Background chart
+            plot_bgcolor: "#ffffff", // Background area dalam chart
+          }}
+          style={{ width: "100%", height: "100%" }}
+        />
+      </div>
+      
     </div>
   );
 };
