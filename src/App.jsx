@@ -2,9 +2,11 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import {useAuth} from './AuthContext'
 
 function Fana() {
   const [count, setCount] = useState(0)
+  const {logout2} = useAuth();
 
   return (
     <>
@@ -28,6 +30,9 @@ function Fana() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+      <button onClick={() => logout2()} className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition-colors">
+                        Log out
+                    </button>
     </>
   )
 }
