@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://dashboard-be-245315940020.asia-southeast2.run.app/api/auth/login',
+    baseURL: 'http://192.168.22.129:8080/api/auth/login',
     headers: {
         'Content-Type': 'application/json',
     },

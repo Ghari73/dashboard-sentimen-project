@@ -17,18 +17,6 @@ function App() {
     const [loading, setLoading] = useState('')
     const [errorFetch, setErrorFetch] = useState(null);
 
-    const handleLogin = (e) => {
-        console.log("POI2")
-        e.preventDefault();
-        if (email === 'admin@gmail.com'){
-            console.log("POI")
-            login(email);
-            navigate('/dashboard');
-        } else{
-            setError("Login Gagal")
-        }
-    }
-
     const {login2: setLoginState} = useAuth();
     
     const handleLogin2 = async (e) => {
@@ -50,7 +38,6 @@ function App() {
                 // await setLoginState("7zxcj7ay87yashdasjdhkjbmnabuiqwe8812u38hajd")
             } catch (error){
                 setErrorFetch(error)
-                alert(errorFetch)
             } finally{
                 setLoading(false)
             }

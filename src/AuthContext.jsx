@@ -41,22 +41,6 @@ export const AuthProvider = ({children}) => {
         setIsLoggedIn(false);
     }
 
-    // useEffect(() => {
-    //     const checkLoginStatus = () => {
-    //         const token = localStorage.getItem('userToken');
-    //         setIsLoggedIn(!!token);
-    //     };
-
-    //     window.addEventListener("storage", checkLoginStatus); // Jika ada perubahan dari tab lain
-    //     return () => window.removeEventListener("storage", checkLoginStatus);
-    // }, []);
-
-    // useEffect(() => {
-    //     if (isLoggedIn) {
-    //         navigate('/dashboard');
-    //     }
-    // }, [isLoggedIn, navigate]);
-
     useEffect(() => {
         if (localStorage.getItem('userToken')) {
             setIsLoggedIn(true);
