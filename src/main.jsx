@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import Fana from './App.jsx'
+import Dashboard from './dashboard.jsx'
 import App from './login'
 import { BrowserRouter, Routes, Route } from 'react-router'
 import { AuthProvider } from './AuthContext.jsx'
@@ -15,9 +16,9 @@ createRoot(document.getElementById('root')).render(
             <App />
           } />
           <Route path='/dashboard' element={
-            <ProtectedRoute>
-              <Fana/>
-            </ProtectedRoute>
+            // <ProtectedRoute>
+              <Dashboard/>
+            // </ProtectedRoute>
           }/>
         </Routes>
     </AuthProvider>
