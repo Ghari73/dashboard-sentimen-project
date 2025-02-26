@@ -4,6 +4,12 @@ import "@fontsource/roboto/300.css"; // Light
 import "@fontsource/roboto/400.css"; // Regular
 import "@fontsource/roboto/500.css"; // Medium
 import "@fontsource/roboto/700.css"; // Bold
+import { RxExit } from "react-icons/rx";
+import { MdFileDownload } from "react-icons/md";
+import { MdStar } from "react-icons/md";
+import { RiDatabaseFill } from "react-icons/ri";
+import { IoCalendarClear } from "react-icons/io5";
+
 
 import './App.css'
 
@@ -78,9 +84,17 @@ const Dashboard = () => {
   return (
     <div style={{ fontFamily: "'Roboto', sans-serif" }} className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className='flex items-center px-20 py-4 bg-[#F5FFFF] drop-shadow-lg mb-8'>
-        <img className='mr-7' src={logo} alt="" />
-        <h1 className="text-4xl font-bold text-[#0E8783]">BYOND Sentiment Dashboard</h1>        
+      <div className='flex justify-between px-20 py-4 bg-[#F5FFFF] drop-shadow-lg mb-8'>
+        <div className="flex items-center">
+          <img className='mr-7' src={logo} alt="" />
+          <h1 className="text-4xl font-bold text-[#0E8783]">BYOND Sentiment Dashboard</h1>        
+        </div>
+        <div className="flex items-center">
+          <a href="">
+            <RxExit size={30} width={30} color="#0E8783" style={{ strokeWidth: 0.8 }}></RxExit>
+
+          </a>
+        </div>
       </div>
 
       <div className='px-20'>
@@ -91,23 +105,56 @@ const Dashboard = () => {
             <h2 className="text-3xl text-[#444444] font-bold">Overview</h2>
           </div>
           <div>
-            <button className='bg-[#1BB8B3] text-white text-base font-semibold py-3.5 px-7 rounded-xl'>Export Dashboard</button>
+            {/* <button className='bg-[#1BB8B3] text-white text-base font-semibold py-3.5 px-7 rounded-xl'>Export Dashboard</button> */}
           </div>
         </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {overviewData.map((item, index) => (
-          <div key={index} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-            <h3 className="text-xl font-medium text-gray-500">{item.title}</h3>
-            <p className="text-4xl font-semibold text-gray-800 mt-2">{item.value}</p>
+      <div className="bg-white p-4 flex items-center rounded-lg shadow-sm border border-gray-100">
+            <div className="w-16 h-16 bg-[#0E8783] rounded-2xl p-2.5 mr-6 ">
+              <IoCalendarClear size={40} color="white"  />
+            </div>
+            <div>
+              <h3 className="text-xl font-medium text-gray-500">Latest Date</h3>
+              <p className="text-4xl font-semibold text-gray-800 mt-2">25 February 2025</p>
+              <p className="text-4xl font-semibold text-gray-800 mt-2">22:33:19</p>
+            </div>
           </div>
-        ))}
+          <div className="bg-white p-4 flex items-center rounded-lg shadow-sm border border-gray-100">
+            <div className="w-16 h-16 bg-[#1BB8B3] rounded-2xl p-1.5 mr-6 ">
+              <RiDatabaseFill size={50} color="white"  />
+            </div>
+            <div>
+              <h3 className="text-xl font-medium text-gray-500">Reviews Count</h3>
+              <p className="text-4xl font-semibold text-gray-800 mt-2">32421</p>
+            </div>
+          </div>
+          <div className="bg-white p-4 flex items-center rounded-lg shadow-sm border border-gray-100">
+            <div className="w-16 h-16 bg-[#1BB8B3] rounded-2xl p-1.5 mr-6 ">
+              <MdStar size={50} color="white"  />
+            </div>
+            <div>
+              <h3 className="text-xl font-medium text-gray-500">App Score</h3>
+              <p className="text-4xl font-semibold text-gray-800 mt-2">4.6</p>
+            </div>
+          </div>
+          <div className="bg-white p-4 flex items-center rounded-lg shadow-sm border border-gray-100">
+            <div className="w-16 h-16 bg-[#DD9838] rounded-2xl p-1.5 mr-6 ">
+              <MdFileDownload size={50} color="white"  />
+            </div>
+            <div>
+              <h3 className="text-xl font-medium text-gray-500">Downloads</h3>
+              <p className="text-4xl font-semibold text-gray-800 mt-2">1.000.000+</p>
+            </div>
+          </div>
       </div>
       </div>
 
       <div className="border-b border-[#717171] my-6"></div>
-      <div className="flex justify-between items-center mb-4">
-              <FilterDropdown versions={versions} onApplyFilters={handleApplyFilters} />
-            </div>
+      <div className="flex justify-end items-center mb-4">
+        {/* <button className="bg-[#1BB8B3] text-white text-base font-semibold py-3.5 px-7 rounded-xl">Hallo</button> */}
+        <FilterDropdown className="w-auto" versions={versions} onApplyFilters={handleApplyFilters} />
+
+      </div>
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -171,8 +218,8 @@ const Dashboard = () => {
       </div>
 
       {/* Comments Table */}
-      <div className="bg-white p-6 rounded-lg shadow-sm">
-        <h2 className="text-lg font-semibold mb-4">Tabel Komentar Prioritas</h2>
+      <div className="bg-white py-11 px-36 rounded-lg shadow-sm">
+        <h2 className="text-4xl text-[#888888] font-bold mb-4">Highlighted Comment</h2>
         <div className="overflow-x-auto">
           <TableComponent data={sampleData} />
         </div>
