@@ -1,13 +1,38 @@
 import React, { useState, useMemo, useEffect } from "react";
-import data from "../data/data";
 import { GrLinkNext, GrLinkPrevious } from "react-icons/gr";
-
+import { fetchAllReview } from "../../api/restApi";
 
 const TableComponent = () => {
+  const [data, setData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const pageSize = 5;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await fetchAllReview();
+        
+        // Konversi data agar cocok dengan tabel
+        const formattedData = result.map(item => ({
+          id: item.reviewId,
+          comment: item.content,
+          rating: item.score,
+          date: new Date(item.at).toLocaleDateString(), // Format tanggal
+          relevance: item.thumbsUpCount,
+          sentiment: item.sentiment,
+          appVersion: item.appVersion || "N/A", // Jika null, ganti dengan "N/A"
+        }));
+
+        setData(formattedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     setCurrentPage(1);

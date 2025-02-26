@@ -1,31 +1,32 @@
 import React, { useEffect, useState } from "react";
 import Plot from "react-plotly.js";
+import { fetchAllSentiment } from "../../api/restApi";
 
 const TimeSeriesChart = () => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("/data/dummy_timeseries.json") // Ambil data dari public folder
-      .then((response) => response.json())
-      .then((jsonData) => {
-        // Pisahkan data berdasarkan sentiment (0 = negatif, 1 = positif)
-        const negativeSentiment = jsonData.filter((item) => item.sentiment === 0);
-        const positiveSentiment = jsonData.filter((item) => item.sentiment === 1);
+    const getData = async () => {
+      console.log("🔄 Fetching sentiment time series data...");
 
-        // Format tanggal agar lebih mudah dibaca
-        const formatDate = (dateString) => {
-          const date = new Date(dateString);
-          return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
-        };
+      try {
+        const result = await fetchAllSentiment();
+        console.log("📊 Raw API Response:", result);
+
+        // Pisahkan data berdasarkan sentiment (0 = negatif, 1 = positif)
+        const negativeSentiment = result.filter((item) => item.sentiment === "0");
+        const positiveSentiment = result.filter((item) => item.sentiment === "1");
 
         // Data untuk sentiment negatif
         const trace1 = {
           type: "scatter",
           mode: "lines+markers",
           name: "Negative",
-          x: negativeSentiment.map((item) => formatDate(item.review_date)),
-          y: negativeSentiment.map((item) => item.sentiment_count),
-          line: { color: "#FF7F0E" }, // Warna lebih lembut
+          x: negativeSentiment.map((item) => item.reviewDate),  // API pakai reviewDate
+          y: negativeSentiment.map((item) => item.sentimentCount),  // API pakai sentimentCount
+          line: { color: "#FF7F0E" },
           marker: { size: 6 },
         };
 
@@ -34,15 +35,25 @@ const TimeSeriesChart = () => {
           type: "scatter",
           mode: "lines+markers",
           name: "Positive",
-          x: positiveSentiment.map((item) => formatDate(item.review_date)),
-          y: positiveSentiment.map((item) => item.sentiment_count),
-          line: { color: "#1F77B4" }, // Warna biru profesional
+          x: positiveSentiment.map((item) => item.reviewDate),
+          y: positiveSentiment.map((item) => item.sentimentCount),
+          line: { color: "#1F77B4" },
           marker: { size: 6 },
         };
 
         setData([trace1, trace2]);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
+        console.log("✅ Processed Data:", { trace1, trace2 });
+
+      } catch (err) {
+        console.error("❌ Error in getData:", err.message);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+        console.log("📉 Data fetching process finished.");
+      }
+    };
+
+    getData();
   }, []);
 
   return (
@@ -51,7 +62,7 @@ const TimeSeriesChart = () => {
       layout={{
         xaxis: {
           title: "Date",
-          tickformat: "%Y-%m-%d",
+          tickformat: "%b %d %Y",
           showgrid: true,
         },
         height: 800,
