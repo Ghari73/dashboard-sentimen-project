@@ -14,7 +14,6 @@ import FilterDropdown from './assets/components/FilterDropdown'; // Sesuaikan pa
 
 import TimeSeriesChart from "./assets/components/TimeSeriesChart";
 import PieChart from "./assets/components/PieChart";
-import BarNegatif from './assets/components/BarNegatif';
 import TableComponent from './assets/components/TableComponent';
 
 // gambar
@@ -107,7 +106,6 @@ const Dashboard = () => {
 
       <div className="border-b border-[#717171] my-6"></div>
       <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Version / Date</h2>
               <FilterDropdown versions={versions} onApplyFilters={handleApplyFilters} />
             </div>
 

@@ -5,6 +5,37 @@ import styled from 'styled-components';
 const Container = styled.div`
   width: 300px;
   margin: 20px auto;
+  position: relative; /* Agar child absolute berada di dalam container */
+`;
+
+const DropdownButton = styled.button`
+  width: 100%;
+  padding: 10px;
+  background-color: #00bfa5;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #009688;
+  }
+`;
+
+const DropdownContent = styled.div`
+  position: absolute; /* Floating dropdown */
+  top: 100%; /* Mulai dari bawah button */
+  left: 0;
+  width: 100%;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  z-index: 1; /* Pastikan muncul di atas elemen lain */
+  display: ${(props) => (props.isOpen ? 'block' : 'none')};
 `;
 
 const Tabs = styled.div`
@@ -69,6 +100,7 @@ const FilterDropdown = ({ versions, onApplyFilters }) => {
   const [selectedVersion, setSelectedVersion] = useState('');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleTabChange = (tab) => {
     setSelectedTab(tab);
@@ -96,39 +128,74 @@ const FilterDropdown = ({ versions, onApplyFilters }) => {
 
   return (
     <Container>
-      {/* Tabs */}
-      <Tabs>
-        <TabButton className={selectedTab === 'Version' ? 'active' : ''} onClick={() => handleTabChange('Version')}>
-          Version
-        </TabButton>
-        <TabButton className={selectedTab === 'Date' ? 'active' : ''} onClick={() => handleTabChange('Date')}>
-          Date
-        </TabButton>
-      </Tabs>
+      {/* Dropdown Button */}
+      <DropdownButton onClick={() => setIsOpen(!isOpen)}>
+        Version / Date
+        <span>▼</span>
+      </DropdownButton>
 
-      {/* Tab Content */}
-      {selectedTab === 'Version' && (
-        <VersionTab>
-          <SelectInput value={selectedVersion} onChange={handleVersionChange}>
-            <option value="">Select Version</option>
-            {versions.map((version) => (
-              <option key={version} value={version}>
-                {version}
-              </option>
-            ))}
-          </SelectInput>
-        </VersionTab>
-      )}
+      {/* Dropdown Content */}
+      <DropdownContent isOpen={isOpen}>
+        {/* Tabs */}
+        <Tabs>
+          <TabButton 
+            className={selectedTab === 'Version' ? 'active' : ''} 
+            onClick={() => handleTabChange('Version')}
+          >
+            Version
+          </TabButton>
+          <TabButton 
+            className={selectedTab === 'Date' ? 'active' : ''} 
+            onClick={() => handleTabChange('Date')}
+          >
+            Date
+          </TabButton>
+        </Tabs>
 
-      {selectedTab === 'Date' && (
-        <DateTab>
-          <DateInput type="date" value={fromDate} onChange={handleFromDateChange} placeholder="From" />
-          <DateInput type="date" value={toDate} onChange={handleToDateChange} placeholder="To" />
-        </DateTab>
-      )}
+        {/* Tab Content */}
+        {selectedTab === 'Version' && (
+          <VersionTab>
+            <SelectInput 
+              value={selectedVersion} 
+              onChange={handleVersionChange}
+            >
+              <option value="">Select Version</option>
+              {versions.map((version) => (
+                <option key={version} value={version}>
+                  {version}
+                </option>
+              ))}
+            </SelectInput>
+          </VersionTab>
+        )}
 
-      {/* Apply Filters Button */}
-      <ApplyButton onClick={applyFilters}>Apply Filters</button>
+        {selectedTab === 'Date' && (
+          <DateTab className='p-12'>
+            <p>From</p>
+            <DateInput 
+              type="date" 
+              value={fromDate} 
+              onChange={handleFromDateChange}
+              placeholder="From"
+              style={{ width: "100%" }} 
+            />
+            <br></br>
+            <p>To</p>
+            <DateInput 
+              type="date" 
+              value={toDate} 
+              onChange={handleToDateChange}
+              placeholder="To"
+              style={{ width: "100%" }} 
+            />
+          </DateTab>
+        )}
+
+        {/* Apply Filters Button */}
+        <ApplyButton onClick={applyFilters}>
+          Apply Filters
+        </ApplyButton>
+      </DropdownContent>
     </Container>
   );
 };
