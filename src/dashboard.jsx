@@ -1,10 +1,19 @@
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import LineChart from "./assets/chart/LineChart"; // Import komponen chart
-import BarChart from "./assets/chart/BarChart"; // Import komponen BarChart
-import TimeSeriesChart from "./assets/chart/TimeSeriesChart";
-import PieChart from "./assets/chart/PieChart";
+import LineChart from "./assets/components/LineChart"; // Import komponen chart
+
+import BarChart from "./assets/components/BarChart"; // Import komponen BarChart
+import { barChartData } from './assets/data/barChartData'; // Sesuaikan path
+
+import TimeSeriesChart from "./assets/components/TimeSeriesChart";
+import PieChart from "./assets/components/PieChart";
+import BarNegatif from './assets/components/BarNegatif';
+import TableComponent from './assets/components/TableComponent';
+
+// gambar
+import logo from './assets/images/logo.png'; // Sesuaikan path
+
 
 
 import { useState } from 'react';
@@ -15,9 +24,9 @@ const Dashboard = () => {
   // Data dummy untuk contoh
   const overviewData = [
     { title: 'Latest Date', value: '24 May 2024' },
-    { title: 'Juniah review', value: '4.8/5' },
-    { title: 'App score', value: '4.6/5' },
-    { title: 'Downloads', value: '1.2M' },
+    { title: 'Juniah review', value: '32421' },
+    { title: 'App score', value: '4.6' },
+    { title: 'Downloads', value: '1.000.000+' },
   ];
 
   const comments = [
@@ -26,27 +35,63 @@ const Dashboard = () => {
     // ...data lainnya
   ];
 
-  return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      {/* Header */}
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Dashboard Ulasan Byond</h1>
+  const sampleData = Array.from({ length: 50 }, (_, i) => ({
+    id: i + 1,
+    date: `2024-02-${(i % 28 + 1).toString().padStart(2, "0")}`, // Format YYYY-MM-DD
+    username: `User${i + 1}`,
+    score: Math.floor(Math.random() * 100), // Random Score
+    thumbsup: Math.floor(Math.random() * 50), // Random Thumbs Up
+    appVersion: `v${Math.floor(Math.random() * 10)}.${Math.floor(Math.random() * 10)}`,
+    comment: `This is comment number ${i + 1}`,
+  }));
 
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className='flex items-center px-20 py-4 bg-[#F5FFFF] drop-shadow-lg mb-8'>
+        <img className='mr-7' src={logo} alt="" />
+        <h1 className="text-4xl font-bold text-[#0E8783]">BYOND Sentiment Dashboard</h1>        
+      </div>
+
+      <div className='px-20'>
       {/* Overview Cards */}
+      <div>
+        <div className='flex justify-between mb-8'>
+          <div>
+            <h2 className="text-3xl text-[#444444] font-bold">Overview</h2>
+          </div>
+          <div>
+            <button className='bg-[#1BB8B3] text-white text-base font-semibold py-3.5 px-7 rounded-xl'>Export Dashboard</button>
+          </div>
+        </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {overviewData.map((item, index) => (
-          <div key={index} className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <div key={index} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
             <h3 className="text-sm font-medium text-gray-500">{item.title}</h3>
             <p className="text-2xl font-semibold text-gray-800 mt-2">{item.value}</p>
           </div>
         ))}
       </div>
+      </div>
 
-      <div className="border-b border-gray-200 my-6"></div>
+      <div className="border-b border-[#717171] my-6"></div>
+      <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">Version / Data</h2>
+              <select 
+                className="border rounded-md px-3 py-1 text-sm"
+                value={filterVersion}
+                // onChange={(e) => setFilterVersion(e.target.value)}
+              >
+                <option>All Versions</option>
+                <option>v1.0</option>
+                <option>v2.0</option>
+              </select>
+            </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Line Chart Placeholder */}
-        <div className="bg-white p-6 rounded-lg shadow-sm">
+        <div className="bg-red-300 p-6 rounded-lg col-span-2 shadow-sm">
           <h2 className="text-lg font-semibold mb-4">Sentiment frekuensi over time</h2>
           {/* <div className="h-64 bg-gray-100 rounded animate-pulse"></div> */}
           <TimeSeriesChart />
@@ -54,28 +99,17 @@ const Dashboard = () => {
 
         {/* Filter and Bars */}
         <div className="space-y-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Filter Version</h2>
-              <select 
-                className="border rounded-md px-3 py-1 text-sm"
-                value={filterVersion}
-                onChange={(e) => setFilterVersion(e.target.value)}
-              >
-                <option>All Versions</option>
-                <option>v1.0</option>
-                <option>v2.0</option>
-              </select>
-            </div>
-            <BarChart />
-          </div>
+          {/* <div className="bg-white p-6 rounded-lg shadow-sm rid "> */}
+
+          <BarChart data={barChartData} />
+          {/* </div> */}
 
           {/* Pie Chart Placeholder */}
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-lg font-semibold mb-4">Distribusi sentiment</h2>
+          {/* <div className="bg-white p-6 rounded-lg shadow-sm"> */}
+            {/* <h2 className="text-lg font-semibold mb-4">Distribusi sentiment</h2> */}
             {/* <div className="h-48 bg-gray-100 rounded-full animate-pulse"></div> */}
             <PieChart />
-          </div>
+          {/* </div> */}
         </div>
       </div>
 
@@ -95,29 +129,9 @@ const Dashboard = () => {
       <div className="bg-white p-6 rounded-lg shadow-sm">
         <h2 className="text-lg font-semibold mb-4">Tabel Komentar Prioritas</h2>
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="text-left text-sm border-b">
-                <th className="pb-3">User</th>
-                <th className="pb-3">Komentar</th>
-                <th className="pb-3">Rating</th>
-              </tr>
-            </thead>
-            <tbody>
-              {comments.map((comment, index) => (
-                <tr key={index} className="border-b last:border-b-0">
-                  <td className="py-3 text-sm">{comment.user}</td>
-                  <td className="py-3 text-sm max-w-xs">{comment.comment}</td>
-                  <td className="py-3">
-                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
-                      {comment.rating}/5
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <TableComponent data={sampleData} />
         </div>
+      </div>
       </div>
     </div>
   );

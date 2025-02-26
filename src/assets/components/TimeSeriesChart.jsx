@@ -13,7 +13,11 @@ const TimeSeriesChart = () => {
         const positiveSentiment = jsonData.filter((item) => item.sentiment === 1);
 
         // Format tanggal agar lebih mudah dibaca
-        const formatDate = (dateString) => new Date(dateString).toISOString().split("T")[0];
+        const formatDate = (dateString) => {
+          const date = new Date(dateString);
+          return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+        };
+        
 
         // Data untuk sentiment negatif
         const trace1 = {
@@ -41,16 +45,20 @@ const TimeSeriesChart = () => {
   }, []);
 
   return (
-    <div className="bg-white p-6 shadow-md rounded-md">
+    <div className="bg-white p-6 shadow-md rounded-md flex">
       <Plot
         data={data}
         layout={{
-          title: "Sentiment Analysis Over Time",
-          xaxis: { title: "Date" },
-          yaxis: { title: "Sentiment Count" },
-        }}
-        style={{ width: "100%", height: "100%" }}
-      />
+    title: "Sentiment Analysis Over Time",
+    xaxis: { 
+      title: "Date",
+      tickformat: "%Y-%m-%d" // Hanya tampilkan tanggal
+    },
+    yaxis: { title: "Sentiment Count" }
+  }}
+  style={{ width: "100%", height: "100%" }}
+/>
+
     </div>
   );
 };
