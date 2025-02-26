@@ -3,6 +3,8 @@ import { useAuth } from "./AuthContext";
 import { useNavigate } from "react-router";
 import { fetchLogin } from "./api/restApi";
 import { Eye, EyeOff } from "lucide-react";
+import photo from './assets/pict.png';
+import logo from './assets/logo.png';
 
 function App() {
     const [email, setEmail] = useState("");
@@ -31,7 +33,6 @@ function App() {
     
     const handleLogin2 = async (e) => {
         e.preventDefault()
-
         let postData = {
             "email": email,
             "password": pass
@@ -50,6 +51,8 @@ function App() {
             } catch (error){
                 setErrorFetch(error)
                 alert(errorFetch)
+            } finally{
+                setLoading(false)
             }
             
         }
@@ -57,30 +60,42 @@ function App() {
     
     return (
         <>
-        <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-            <div className="max-w-lg w-full h-100 bg-white rounded-xl shadow-lg p-8 content-center">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 text-left font-[Roboto]">Log In into your BSI Account</h2>
+        <div className="flex h-screen">
+            <div className="w-1/2 flex flex-col items-center justify-center bg-[#90C6BF] p-10">
+                <img src={photo} className="w-3/5 h-auto object-cover" alt="Illustration" />
+            </div>
 
-                <form onSubmit={handleLogin2} className="space-y-4">
+            <div className="w-1/2 flex flex-col justify-center items-center bg-[#F4FAF9]">
+                <div className="flex items-center mb-16">
+                    <img src={logo} alt="Logo" className="h-30" />
+                </div>
+
+                <form onSubmit={handleLogin2} className="w-3/4 space-y-4">
+                    <h2 className="text-xl font-bold text-gray-900 font-[Roboto] text-left">
+                        Log In into your BSI Account
+                    </h2>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1 text-left">Username / Email</label>
-                        <input 
-                        type="email" 
-                        className="font-[Roboto] w-full h-12 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1BB8B3] focus:border-[#1BB8B3] outline-none transition-all"
-                        onChange={(e) => setEmail(e.target.value)}
+                        <label className="block text-sm font-medium text-gray-700 mb-1 text-left">
+                            Username / Email
+                        </label>
+                        <input
+                            type="email"
+                            className="font-[Roboto] w-full h-12 px-4 py-2 border border-gray-700 rounded-lg 
+                            focus:ring-2 focus:ring-[#1BB8B3] focus:border-[#1BB8B3] outline-none transition-all"
+                            onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
 
                     <div className="relative">
-                        <label className="block text-sm font-medium text-gray-700 mb-1 text-left font-[Roboto]">
+                        <label className="block text-sm font-medium text-gray-700 mb-1 font-[Roboto] text-left">
                             Password
                         </label>
                         <input
                             type={showPassword ? "text" : "password"}
-                            className="font-[Roboto] w-full h-12 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1BB8B3] focus:border-[#1BB8B3] outline-none transition-all pr-10"
+                            className="font-[Roboto] w-full h-12 px-4 py-2 border border-gray-700 rounded-lg 
+                            focus:ring-2 focus:ring-[#1BB8B3] focus:border-[#1BB8B3] outline-none transition-all pr-10"
                             onChange={(e) => setPass(e.target.value)}
                         />
-                        
                         <button
                             type="button"
                             className="absolute inset-y-0 right-3 flex items-center text-gray-500 mt-6"
@@ -89,24 +104,24 @@ function App() {
                             {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
                         </button>
                     </div>
-        {/* 
-                    <div class="flex items-center justify-between">
-                        <label class="flex items-center">
-                        <input type="checkbox" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"/>
-                        <span class="ml-2 text-sm text-gray-600">Remember me</span>
-                        </label>
-                        <a href="#" class="text-sm text-indigo-600 hover:text-indigo-500">Forgot password?</a>
-                    </div> */}
 
-                    <button type="submit" className="font-[Roboto] w-full h-12 bg-[#1BB8B3] hover:bg-[#70F2EE] text-white font-medium py-2.5 rounded-lg transition-colors">
-                        Log In
+                    <button 
+                        type="submit" 
+                        className={`w-full h-12 text-white font-medium py-2.5 rounded-lg transition-colors
+                            ${loading ? "bg-[#70F2EE] cursor-not-allowed" : "bg-[#1BB8B3] hover:bg-[#70F2EE]"}
+                        `}
+                        disabled={loading}
+                    >
+                        {/* {loading ? "Logging in..." : "Log In"} */}
+                        {loading ? (
+                            <div className="flex justify-center items-center">
+                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+                        ) : (
+                            "Log In"
+                        )}
                     </button>
                 </form>
-
-                {/* <div class="mt-6 text-center text-sm text-gray-600">
-                Don't have an account? 
-                <a href="#" class="text-indigo-600 hover:text-indigo-500 font-medium">Sign up</a>
-                </div> */}
             </div>
         </div>
         </>
