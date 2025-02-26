@@ -1,33 +1,63 @@
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+//Font
+import "@fontsource/roboto"; // Impor font untuk semua style
+import "@fontsource/roboto/300.css"; // Light
+import "@fontsource/roboto/400.css"; // Regular
+import "@fontsource/roboto/500.css"; // Medium
+import "@fontsource/roboto/700.css"; // Bold
+
 import './App.css'
-import LineChart from "./assets/components/LineChart"; // Import komponen chart
 
 import BarChart from "./assets/components/BarChart"; // Import komponen BarChart
 import { barChartData } from './assets/data/barChartData'; // Sesuaikan path
 
+import FilterDropdown from './assets/components/FilterDropdown'; // Sesuaikan path
+
 import TimeSeriesChart from "./assets/components/TimeSeriesChart";
 import PieChart from "./assets/components/PieChart";
-import BarNegatif from './assets/components/BarNegatif';
 import TableComponent from './assets/components/TableComponent';
 
 // gambar
 import logo from './assets/images/logo.png'; // Sesuaikan path
 
+//WordCloud
+import WordCloud from './assets/components/WordCloud'; // Sesuaikan path
+import wordData from './assets/data/wordData';
 
-
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 const Dashboard = () => {
   const [filterVersion, setFilterVersion] = useState('All Versions');
+
+  const [versions, setVersions] = useState([
+    'Version 1.0.1',
+    'Version 1.0.2',
+    'Version 1.0.3',
+    'Version 1.0.4',
+    'Version 2.0.1',
+  ]);
+
+  const [filters, setFilters] = useState({});
+
+  const handleApplyFilters = (newFilters) => {
+    setFilters(newFilters);
+    console.log('Applied Filters:', newFilters);
+  };
   
   // Data dummy untuk contoh
   const overviewData = [
     { title: 'Latest Date', value: '24 May 2024' },
-    { title: 'Juniah review', value: '32421' },
+    { title: 'Reviews Count', value: '32421' },
     { title: 'App score', value: '4.6' },
     { title: 'Downloads', value: '1.000.000+' },
   ];
+
+  const options = {
+    color: "#222", // Warna default
+    randomColor: true, // Warna acak aktif
+    fontFamily: "Poppins, sans-serif",
+    scale: 2,
+    rotate: 30,
+  };
 
   const comments = [
     { user: 'User1', comment: 'Aplikasi sangat membantu dalam...', rating: 3 },
@@ -46,7 +76,7 @@ const Dashboard = () => {
   }));
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div style={{ fontFamily: "'Roboto', sans-serif" }} className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className='flex items-center px-20 py-4 bg-[#F5FFFF] drop-shadow-lg mb-8'>
         <img className='mr-7' src={logo} alt="" />
@@ -67,8 +97,8 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {overviewData.map((item, index) => (
           <div key={index} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-            <h3 className="text-sm font-medium text-gray-500">{item.title}</h3>
-            <p className="text-2xl font-semibold text-gray-800 mt-2">{item.value}</p>
+            <h3 className="text-xl font-medium text-gray-500">{item.title}</h3>
+            <p className="text-4xl font-semibold text-gray-800 mt-2">{item.value}</p>
           </div>
         ))}
       </div>
@@ -76,16 +106,7 @@ const Dashboard = () => {
 
       <div className="border-b border-[#717171] my-6"></div>
       <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Version / Data</h2>
-              <select 
-                className="border rounded-md px-3 py-1 text-sm"
-                value={filterVersion}
-                // onChange={(e) => setFilterVersion(e.target.value)}
-              >
-                <option>All Versions</option>
-                <option>v1.0</option>
-                <option>v2.0</option>
-              </select>
+              <FilterDropdown versions={versions} onApplyFilters={handleApplyFilters} />
             </div>
 
       {/* Charts Section */}
@@ -116,12 +137,36 @@ const Dashboard = () => {
       {/* Wordcloud Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">Wordcloud Negatif</h2>
-\
+        <div className='flex'>
+            <h2 className="text-4xl text-[#DD9838] font-medium mb-4 mr-2">Negative</h2>
+            <h2 className="text-4xl text-[#666666] font-medium mb-4">Wordcloud</h2>      
+          </div>
+          <WordCloud
+          words={wordData.negative}
+          options={{
+            color: "orange",
+            fontFamily: "Arial",
+            scale: 1.8,
+            rotate: () => (Math.random() > 0.5 ? 0 : 90),
+            randomColor: false,
+          }}
+        />
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">Wordcloud Positif</h2>
-\
+          <div className='flex'>
+            <h2 className="text-4xl text-[#14AE5C] font-medium mb-4 mr-2">Positive</h2>
+            <h2 className="text-4xl text-[#666666] font-medium mb-4">Wordcloud</h2>      
+          </div>
+          <WordCloud
+          words={wordData.positive}
+          options={{
+            color: "teal",
+            fontFamily: "Arial",
+            scale: 1.8,
+            rotate: () => (Math.random() > 0.5 ? 0 : 90),
+            randomColor: false,
+          }}
+        />
         </div>
       </div>
 

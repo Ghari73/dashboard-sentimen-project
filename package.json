@@ -10,9 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/roboto": "^5.1.1",
     "@tailwindcss/postcss": "^4.0.8",
     "@tailwindcss/vite": "^4.0.8",
+    "chart.js": "^4.4.8",
+    "chartjs-chart-wordcloud": "^4.4.4",
     "d3": "^7.9.0",
+    "d3-fetch": "^3.0.1",
     "plotly.js": "^3.0.1",
     "postcss": "^8.5.3",
     "react": "^19.0.0",
