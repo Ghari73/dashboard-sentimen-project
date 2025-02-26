@@ -1,20 +1,30 @@
 import React, { useEffect, useState } from "react";
 import Plot from "react-plotly.js";
+import { useAuth } from "../../AuthContext";
+import { fetchSentimentDistribution } from "../../api/restApi";
 
 const PieChart = () => {
   const [data, setData] = useState([]);
+  const {user} = useAuth()
 
   useEffect(() => {
-    fetch("/data/dummy_timeseries.json") // Pastikan path benar
-      .then((response) => response.json())
-      .then((jsonData) => {
-        const totalNegative = jsonData
-          .filter((item) => item.sentiment === 0)
-          .reduce((sum, item) => sum + item.sentiment_count, 0);
+    const fetchData = async () => {
+      if (!user?.token) {
+        console.error("⚠ Token tidak tersedia. Harap login terlebih dahulu.");
+        return;
+      }
+
+      try {
+        const jsonData = await fetchSentimentDistribution(user.token);
+        if (!jsonData) return;
 
         const totalPositive = jsonData
-          .filter((item) => item.sentiment === 1)
-          .reduce((sum, item) => sum + item.sentiment_count, 0);
+          .filter((item) => item.sentiment === "1")
+          .reduce((sum, item) => sum + item.count, 0);
+
+        const totalNegative = jsonData
+          .filter((item) => item.sentiment === "0")
+          .reduce((sum, item) => sum + item.count, 0);
 
         const pieData = [
           {
@@ -32,9 +42,13 @@ const PieChart = () => {
         ];
 
         setData(pieData);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [user?.token]);
 
   return (
     <div className="bg-white p-6 shadow-md rounded-md w-full flex flex-col items-center">

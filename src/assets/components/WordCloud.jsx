@@ -11,7 +11,7 @@ const WordCloud = ({ words, options }) => {
 
   useEffect(() => {
     const ctx = chartRef.current.getContext("2d");
-
+ 
     // **Hancurkan chart lama jika ada**
     if (chartInstance.current) {
       chartInstance.current.destroy();

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://192.168.22.129:8080/api/auth/login',
+    baseURL: 'http://192.168.22.129:8080/api/',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -10,7 +10,7 @@ const api = axios.create({
 
 export const fetchLogin = async (postData) => {
     try{
-        const response = await api.post('',postData)
+        const response = await api.post('auth/login',postData)
         alert('Login Successful')
         return response.data
     } catch (error) {
@@ -32,5 +32,22 @@ export const fetchLogin = async (postData) => {
         throw new Error('Failed to login users: ' + error.message);
     }
 }
+
+export const fetchSentimentDistribution = async (token) => {
+    if (!token) {
+        console.error("⚠ Token tidak tersedia, silakan login ulang.");
+        return null; // Jangan fetch jika token kosong
+    }
+
+    try {
+        const response = await api.get("/data/sentiment-distribution", {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching sentiment data:", error);
+        throw error;
+    }
+};
 
 export default api;
