@@ -7,8 +7,6 @@ const TimeSeriesChart = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const getData = async () => {
@@ -45,18 +43,6 @@ const TimeSeriesChart = () => {
         };
 
         setData([trace1, trace2]);
-        console.log("✅ Processed Data:", { trace1, trace2 });
-
-      } catch (err) {
-        console.error("❌ Error in getData:", err.message);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-        console.log("📉 Data fetching process finished.");
-      }
-    };
-
-    getData();
         console.log("✅ Processed Data:", { trace1, trace2 });
 
       } catch (err) {
