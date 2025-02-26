@@ -1,132 +1,118 @@
 import React, { useState, useMemo, useEffect } from "react";
+import data from "../data/data";
+import { GrLinkNext, GrLinkPrevious } from "react-icons/gr";
 
-const TableComponent = ({ data }) => {
+
+const TableComponent = () => {
   const [searchText, setSearchText] = useState("");
-  const [dateFilter, setDateFilter] = useState("");
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 5; // Jumlah data per halaman
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const pageSize = 5;
 
-  // 🔄 Reset page ke 1 saat searchText atau dateFilter berubah
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchText, dateFilter]);
+  }, [searchText]);
 
-  // **🔍 Search & Filter Data**
-  const filteredData = useMemo(() => {
-    return data.filter((row) => {
-      const matchesSearch = searchText
-        ? row.username.toLowerCase().includes(searchText.toLowerCase()) ||
-          row.comment.toLowerCase().includes(searchText.toLowerCase())
-        : true;
-
-      const matchesDate = dateFilter ? row.date.startsWith(dateFilter) : true;
-
-      return matchesSearch && matchesDate;
-    });
-  }, [data, searchText, dateFilter]);
-
-  // **🔀 Sorting Data**
   const sortedData = useMemo(() => {
-    if (!sortConfig.key) return filteredData;
-    return [...filteredData].sort((a, b) => {
-      if (a[sortConfig.key] < b[sortConfig.key]) {
-        return sortConfig.direction === "asc" ? -1 : 1;
-      }
-      if (a[sortConfig.key] > b[sortConfig.key]) {
-        return sortConfig.direction === "asc" ? 1 : -1;
-      }
-      return 0;
-    });
-  }, [filteredData, sortConfig]);
+    let sortableData = [...data];
+    if (sortConfig.key) {
+      sortableData.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === "asc" ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === "asc" ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableData;
+  }, [data, sortConfig]);
 
-  // **📃 Pagination**
-  const totalPages = Math.max(1, Math.ceil(sortedData.length / pageSize)); // Minimal 1 halaman
+  const filteredData = useMemo(() => {
+    return sortedData.filter(row => row.comment.toLowerCase().includes(searchText.toLowerCase()));
+  }, [searchText, sortedData]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredData]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredData.length / pageSize));
   const currentData = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
-    return sortedData.slice(start, start + pageSize);
-  }, [sortedData, currentPage]);
+    return filteredData.slice(start, start + pageSize);
+  }, [filteredData, currentPage]);
 
-  // **🔀 Handle Sorting**
   const handleSort = (key) => {
-    setSortConfig((prev) => ({
-      key,
-      direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
-    }));
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      {/* 🔎 Search & Filter */}
-      <div className="flex space-x-4 mb-4">
+    <div className="">
+      <div className="flex justify-end items-center mb-4">
         <input
           type="text"
-          placeholder="Search username or comment..."
-          className="border p-2 rounded w-1/2"
+          placeholder="Search..."
+          className="border p-2 rounded w-1/3"
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
         />
-        <input
-          type="date"
-          className="border p-2 rounded w-1/2"
-          value={dateFilter}
-          onChange={(e) => setDateFilter(e.target.value)}
-        />
       </div>
-
-      {/* 🏆 Table */}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse border border-gray-300 rounded-lg shadow-lg">
-          <thead className="bg-blue-500 text-white">
+          <thead className="bg-gray-200">
             <tr>
-              {["Date", "Username", "Score", "Thumbs Up", "App Version", "Comment"].map((col, index) => (
-                <th
-                  key={index}
-                  className="p-3 cursor-pointer"
-                  onClick={() => handleSort(col.toLowerCase().replace(/\s+/g, ""))}
+              {['Review Id', 'Comment', 'Rating', 'Date', 'Relevance', 'Sentiment', 'App Version'].map(col => (
+                <th 
+                  key={col} 
+                  className="p-3 border cursor-pointer"
+                  onClick={() => handleSort(col.toLowerCase().replace(/ /g, ""))}
                 >
-                  {col} {sortConfig.key === col.toLowerCase().replace(/\s+/g, "") ? (sortConfig.direction === "asc" ? "🔼" : "🔽") : ""}
+                  {col} {sortConfig.key === col.toLowerCase().replace(/ /g, "") ? (sortConfig.direction === "asc" ? "↑" : "↓") : ""}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {currentData.length > 0 ? (
-              currentData.map((row) => (
+              currentData.map(row => (
                 <tr key={row.id} className="border-b hover:bg-gray-100">
-                  <td className="p-3">{row.date}</td>
-                  <td className="p-3 font-medium">{row.username}</td>
-                  <td className="p-3 text-center">{row.score}</td>
-                  <td className="p-3 text-center">{row.thumbsup}</td>
-                  <td className="p-3 text-center">{row.appVersion}</td>
-                  <td className="p-3">{row.comment}</td>
+                  <td className="p-3 border">{row.id}</td>
+                  <td className="p-3 border">{row.comment}</td>
+                  <td className="p-3 border text-center">{row.rating}</td>
+                  <td className="p-3 border text-center">{row.date}</td>
+                  <td className="p-3 border text-center">{row.relevance}</td>
+                  <td className="p-3 border text-center">{row.sentiment}</td>
+                  <td className="p-3 border text-center">{row.appVersion}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="text-center p-3">No data found</td>
+                <td colSpan="7" className="text-center p-3">No data found</td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
-
-      {/* 📃 Pagination */}
       <div className="flex justify-between items-center mt-4">
         <button
-          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-          className={`px-4 py-2 bg-blue-500 text-white rounded ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+          onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+          className={`px-5 py-3 bg-gray-300 flex items-center rounded-xl ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
           disabled={currentPage === 1}
         >
-          Previous
+          <div className="mr-2"><GrLinkPrevious /></div> Previous
         </button>
-        <span> Page {currentPage} of {totalPages} </span>
+        <span> {currentPage} of {totalPages} </span>
         <button
-          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-          className={`px-4 py-2 bg-blue-500 text-white rounded ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
+          onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+          className={`px-5 py-3 bg-[#1BB8B3] flex items-center text-white rounded-xl ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
           disabled={currentPage === totalPages}
         >
-          Next
+          Next <div className="ml-2"><GrLinkNext /></div>
         </button>
       </div>
     </div>
