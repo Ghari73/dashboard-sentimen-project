@@ -19,6 +19,6 @@ const data = [
       appVersion: `1.4.${Math.floor(Math.random() * 4)}`
     }))
   ];
-  
+   
   export default data;
   
