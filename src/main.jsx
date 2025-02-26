@@ -16,9 +16,9 @@ createRoot(document.getElementById('root')).render(
             <App />
           } />
           <Route path='/dashboard' element={
-            <ProtectedRoute>
+            // <ProtectedRoute>
               <Dashboard/>
-            </ProtectedRoute>
+            // </ProtectedRoute>
           }/>
         </Routes>
     </AuthProvider>
