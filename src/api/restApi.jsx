@@ -212,7 +212,7 @@ export const fetchLatestDate = async () => {
     } catch (error) {
         console.error("❌ Error fetching app detail data:", error.message);
         throw new Error('Failed to fetch app detail data: ' + error.message);
-    }
+    }
 };
 
 export default api;

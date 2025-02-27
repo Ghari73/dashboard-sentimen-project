@@ -7,29 +7,32 @@ const TableComponent = () => {
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
-  const pageSize = 5;
+  const pageSize = 10;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const result = await fetchAllReview();
-        const formattedData = result.map(item => ({
+
+        const formattedData = result.map((item) => ({
           id: item.reviewId,
           comment: item.content,
           rating: item.score,
           date: new Date(item.at).toLocaleDateString(),
           relevance: item.thumbsUpCount,
-          sentiment: item.sentiment === 1 ? "Positive" : "Negative",
+          sentiment: item.sentiment === "1" ? "Positive" : "Negative",
           appVersion: item.appVersion || "N/A",
         }));
+
         setData(formattedData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
+
     fetchData();
   }, []);
-  
+
   useEffect(() => {
     setCurrentPage(1);
   }, [searchText]);
@@ -38,18 +41,6 @@ const TableComponent = () => {
     let sortableData = [...data];
     if (sortConfig.key) {
       sortableData.sort((a, b) => {
-        if (sortConfig.key === "sentiment") {
-          return sortConfig.direction === "asc" 
-            ? a.sentiment.localeCompare(b.sentiment)
-            : b.sentiment.localeCompare(a.sentiment);
-        }
-        if (sortConfig.key === "appVersion") {
-          const versionA = a.appVersion === "N/A" ? "999.999.999" : a.appVersion;
-          const versionB = b.appVersion === "N/A" ? "999.999.999" : b.appVersion;
-          return sortConfig.direction === "asc" 
-            ? versionA.localeCompare(versionB, undefined, { numeric: true })
-            : versionB.localeCompare(versionA, undefined, { numeric: true });
-        }
         if (a[sortConfig.key] < b[sortConfig.key]) {
           return sortConfig.direction === "asc" ? -1 : 1;
         }
@@ -63,14 +54,11 @@ const TableComponent = () => {
   }, [data, sortConfig]);
 
   const filteredData = useMemo(() => {
-    return sortedData.filter(row => 
-      row.id.toLowerCase().includes(searchText.toLowerCase()) ||
-      row.comment.toLowerCase().includes(searchText.toLowerCase()) ||
-      row.rating.toString().includes(searchText) ||
-      row.date.includes(searchText) ||
-      row.relevance.toString().includes(searchText) ||
-      row.sentiment.toLowerCase().includes(searchText.toLowerCase()) ||
-      row.appVersion.toLowerCase().includes(searchText.toLowerCase())
+    return sortedData.filter((row) =>
+      Object.values(row)
+        .join(" ")
+        .toLowerCase()
+        .includes(searchText.toLowerCase())
     );
   }, [searchText, sortedData]);
 
@@ -93,7 +81,7 @@ const TableComponent = () => {
   };
 
   return (
-    <div className="">
+    <div>
       <div className="flex justify-end items-center mb-4">
         <input
           type="text"
@@ -107,20 +95,33 @@ const TableComponent = () => {
         <table className="w-full border-collapse border border-gray-300 rounded-lg shadow-lg">
           <thead className="bg-gray-200">
             <tr>
-              {['Review Id', 'Comment', 'Rating', 'Date', 'Relevance', 'Sentiment', 'App Version'].map(col => (
-                <th 
-                  key={col} 
+              {[
+                "Review Id",
+                "Comment",
+                "Rating",
+                "Date",
+                "Relevance",
+                "Sentiment",
+                "App Version",
+              ].map((col) => (
+                <th
+                  key={col}
                   className="p-3 border cursor-pointer"
                   onClick={() => handleSort(col.toLowerCase().replace(/ /g, ""))}
                 >
-                  {col} {sortConfig.key === col.toLowerCase().replace(/ /g, "") ? (sortConfig.direction === "asc" ? "↑" : "↓") : ""}
+                  {col}{" "}
+                  {sortConfig.key === col.toLowerCase().replace(/ /g, "")
+                    ? sortConfig.direction === "asc"
+                      ? "↑"
+                      : "↓"
+                    : ""}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {currentData.length > 0 ? (
-              currentData.map(row => (
+              currentData.map((row) => (
                 <tr key={row.id} className="border-b hover:bg-gray-100">
                   <td className="p-3 border">{row.id}</td>
                   <td className="p-3 border">{row.comment}</td>
@@ -133,7 +134,9 @@ const TableComponent = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="text-center p-3">No data found</td>
+                <td colSpan="7" className="text-center p-3">
+                  No data found
+                </td>
               </tr>
             )}
           </tbody>
@@ -141,19 +144,32 @@ const TableComponent = () => {
       </div>
       <div className="flex justify-between items-center mt-4">
         <button
-          onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
-          className={`px-5 py-3 bg-gray-300 flex items-center rounded-xl ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+          className={`px-5 py-3 bg-gray-300 flex items-center rounded-xl ${
+            currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+          }`}
           disabled={currentPage === 1}
         >
-          <div className="mr-2"><GrLinkPrevious /></div> Previous
+          <div className="mr-2">
+            <GrLinkPrevious />
+          </div>{" "}
+          Previous
         </button>
-        <span> {currentPage} of {totalPages} </span>
+        <span>
+          {" "}
+          {currentPage} of {totalPages}{" "}
+        </span>
         <button
-          onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
-          className={`px-5 py-3 bg-[#1BB8B3] flex items-center text-white rounded-xl ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
+          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+          className={`px-5 py-3 bg-[#1BB8B3] flex items-center text-white rounded-xl ${
+            currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+          }`}
           disabled={currentPage === totalPages}
         >
-          Next <div className="ml-2"><GrLinkNext /></div>
+          Next{" "}
+          <div className="ml-2">
+            <GrLinkNext />
+          </div>
         </button>
       </div>
     </div>

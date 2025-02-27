@@ -175,7 +175,7 @@ useEffect(() => {
               </div>
               <div>
                 <h3 className="text-xl font-medium text-gray-500">App Score</h3>
-                <p className="text-3xl font-medium text-gray-800 mt-2">{appDetail["App Score"].toPrecision(3)}</p>
+                <p className="text-3xl font-medium text-gray-800 mt-2">{appDetail["App Score"]}</p>
               </div>
             </div>
             <div className="bg-white p-4 flex items-center rounded-lg shadow-sm border border-gray-100">
@@ -281,7 +281,7 @@ useEffect(() => {
         <div className="bg-white py-11 px-36 rounded-lg shadow-sm">
           <h2 className="text-4xl text-[#888888] font-bold mb-4">Highlighted Comment</h2>
           <div className="overflow-x-auto">
-            <TableComponent data={sampleData} />
+          <TableComponent />
           </div>
         </div>
         </div>
