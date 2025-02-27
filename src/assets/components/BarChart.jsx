@@ -3,7 +3,7 @@ import Plot from "react-plotly.js";
 
 const BarChart = () => {
   return (
-    <div className="w-full max-w-md mx-auto bg-white p-4 shadow-md rounded-md">
+    <div className="w-full mx-auto bg-white p-4 shadow-md rounded-md">
       <h2 className="text-lg font-bold mb-2 text-[#13A09B]">Rating Frequency</h2>
       <div className="w-full h-[360px] bg-white p-2 rounded-md">
         <Plot
