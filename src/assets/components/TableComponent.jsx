@@ -2,10 +2,8 @@ import React, { useState, useMemo, useEffect } from "react";
 import { GrLinkNext, GrLinkPrevious } from "react-icons/gr";
 import { fetchAllReview } from "../../api/restApi";
 
-
 const TableComponent = () => {
   const [data, setData] = useState([]);
-
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -15,24 +13,20 @@ const TableComponent = () => {
     const fetchData = async () => {
       try {
         const result = await fetchAllReview();
-        
-        // Konversi data agar cocok dengan tabel
         const formattedData = result.map(item => ({
           id: item.reviewId,
           comment: item.content,
           rating: item.score,
-          date: new Date(item.at).toLocaleDateString(), // Format tanggal
+          date: new Date(item.at).toLocaleDateString(),
           relevance: item.thumbsUpCount,
-          sentiment: item.sentiment,
-          appVersion: item.appVersion || "N/A", // Jika null, ganti dengan "N/A"
+          sentiment: item.sentiment === 1 ? "Positive" : "Negative",
+          appVersion: item.appVersion || "N/A",
         }));
-
         setData(formattedData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-
     fetchData();
   }, []);
   
@@ -44,6 +38,18 @@ const TableComponent = () => {
     let sortableData = [...data];
     if (sortConfig.key) {
       sortableData.sort((a, b) => {
+        if (sortConfig.key === "sentiment") {
+          return sortConfig.direction === "asc" 
+            ? a.sentiment.localeCompare(b.sentiment)
+            : b.sentiment.localeCompare(a.sentiment);
+        }
+        if (sortConfig.key === "appVersion") {
+          const versionA = a.appVersion === "N/A" ? "999.999.999" : a.appVersion;
+          const versionB = b.appVersion === "N/A" ? "999.999.999" : b.appVersion;
+          return sortConfig.direction === "asc" 
+            ? versionA.localeCompare(versionB, undefined, { numeric: true })
+            : versionB.localeCompare(versionA, undefined, { numeric: true });
+        }
         if (a[sortConfig.key] < b[sortConfig.key]) {
           return sortConfig.direction === "asc" ? -1 : 1;
         }
@@ -57,7 +63,15 @@ const TableComponent = () => {
   }, [data, sortConfig]);
 
   const filteredData = useMemo(() => {
-    return sortedData.filter(row => row.comment.toLowerCase().includes(searchText.toLowerCase()));
+    return sortedData.filter(row => 
+      row.id.toLowerCase().includes(searchText.toLowerCase()) ||
+      row.comment.toLowerCase().includes(searchText.toLowerCase()) ||
+      row.rating.toString().includes(searchText) ||
+      row.date.includes(searchText) ||
+      row.relevance.toString().includes(searchText) ||
+      row.sentiment.toLowerCase().includes(searchText.toLowerCase()) ||
+      row.appVersion.toLowerCase().includes(searchText.toLowerCase())
+    );
   }, [searchText, sortedData]);
 
   useEffect(() => {

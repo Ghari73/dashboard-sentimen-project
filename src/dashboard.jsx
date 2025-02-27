@@ -12,6 +12,7 @@ import { IoCalendarClear } from "react-icons/io5";
 
 import { useAuth } from "./AuthContext";
 import {AuthProvider} from "./AuthContext";
+import React, { useEffect, useState } from "react";
 
 import './App.css'
 
@@ -28,10 +29,8 @@ import TableComponent from './assets/components/TableComponent';
 import logo from './assets/images/logo.png'; // Sesuaikan path
 
 //WordCloud
+import { fetchSentimentCloud, fetchAppDetail, fetchLatestDate } from "./api/restApi"; // Import fungsi dari restAPI.jsx
 import WordCloud from './assets/components/WordCloud'; // Sesuaikan path
-import wordData from './assets/data/wordData';
-
-import { useState, useMemo } from 'react';
 
 const Dashboard = () => {
   const [filterVersion, setFilterVersion] = useState('All Versions');
@@ -45,19 +44,59 @@ const Dashboard = () => {
   ]);
 
   const [filters, setFilters] = useState({});
+  const [wordData, setWordData] = useState({ positive: [], negative: [] });
 
+  const [appDetail, setAppDetail] = useState({
+    "App Downloads": "Loading...",
+    "App Score": "Loading...",
+    "Number of Reviews": "Loading..."
+});
+
+const [latestDate, setLatestDate] = useState(null);
+  const [loadingLD, setLoadingLD] = useState(true);
+  const [errorLD, setErrorLD] = useState(null);
+
+
+useEffect(() => {
+    const getAppDetail = async () => {
+        try {
+            const data = await fetchAppDetail();
+            setAppDetail(data);
+        } catch (error) {
+            console.error("Error fetching app detail:", error);
+        }
+    };
+    const getLatestDate = async () => {
+      try {
+          const data = await fetchLatestDate();
+          setLatestDate(data);
+      } catch (error) {
+          setLatestDate(error.message);
+      } finally {
+          setLoadingLD(false);
+      }
+  };
+
+    getAppDetail();
+    getLatestDate();
+}, []);
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const data = await fetchSentimentCloud(); // Panggil fungsi
+        setWordData(data); // Update state
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+
+    getData();
+  }, []);
   const handleApplyFilters = (newFilters) => {
     setFilters(newFilters);
     console.log('Applied Filters:', newFilters);
   };
-  
-  // Data dummy untuk contoh
-  const overviewData = [
-    { title: 'Latest Date', value: '24 May 2024' },
-    { title: 'Reviews Count', value: '32421' },
-    { title: 'App score', value: '4.6' },
-    { title: 'Downloads', value: '1.000.000+' },
-  ];
 
   const options = {
     color: "#222", // Warna default
@@ -113,13 +152,12 @@ const Dashboard = () => {
           </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="bg-white p-4 flex items-center rounded-lg shadow-sm border border-gray-100">
-              <div className="w-16 h-16 bg-[#0E8783] rounded-2xl p-2.5 mr-6 ">
+              <div className="w-16 h-16 bg-[#0E8783] rounded-2xl p-3 mr-6 ">
                 <IoCalendarClear size={40} color="white"  />
               </div>
               <div>
                 <h3 className="text-xl font-medium text-gray-500">Latest Date</h3>
-                <p className="text-4xl font-semibold text-gray-800 mt-2">25 February 2025</p>
-                <p className="text-4xl font-semibold text-gray-800 mt-2">22:33:19</p>
+                <p className="text-3xl font-medium text-gray-800 mt-2">{latestDate ? latestDate.date : "No Data"}</p>
               </div>
             </div>
             <div className="bg-white p-4 flex items-center rounded-lg shadow-sm border border-gray-100">
@@ -128,7 +166,7 @@ const Dashboard = () => {
               </div>
               <div>
                 <h3 className="text-xl font-medium text-gray-500">Reviews Count</h3>
-                <p className="text-4xl font-semibold text-gray-800 mt-2">32421</p>
+                <p className="text-3xl font-medium text-gray-800 mt-2">{appDetail["Number of Reviews"]}</p>
               </div>
             </div>
             <div className="bg-white p-4 flex items-center rounded-lg shadow-sm border border-gray-100">
@@ -137,7 +175,7 @@ const Dashboard = () => {
               </div>
               <div>
                 <h3 className="text-xl font-medium text-gray-500">App Score</h3>
-                <p className="text-4xl font-semibold text-gray-800 mt-2">4.6</p>
+                <p className="text-3xl font-medium text-gray-800 mt-2">{appDetail["App Score"].toPrecision(3)}</p>
               </div>
             </div>
             <div className="bg-white p-4 flex items-center rounded-lg shadow-sm border border-gray-100">
@@ -146,19 +184,38 @@ const Dashboard = () => {
               </div>
               <div>
                 <h3 className="text-xl font-medium text-gray-500">Downloads</h3>
-                <p className="text-4xl font-semibold text-gray-800 mt-2">1.000.000+</p>
+                <p className="text-3xl font-medium text-gray-800 mt-2">{appDetail["App Downloads"]}</p>
               </div>
             </div>
         </div>
         </div>
 
         <div className="border-b border-[#717171] my-6"></div>
-        <div className="flex justify-end items-center mb-4">
+        <div className="flex justify-end items-end mb-7">
           {/* <button className="bg-[#1BB8B3] text-white text-base font-semibold py-3.5 px-7 rounded-xl">Hallo</button> */}
-          <FilterDropdown className="w-auto" versions={versions} onApplyFilters={handleApplyFilters} />
-
+          {/* <FilterDropdown className="w-auto" versions={versions} onApplyFilters={handleApplyFilters} /> */}
+          <div className="block mr-4">
+            <div>
+              <label className="text-[#666666] text-xl mb-1.5" for="From">From</label>
+            </div>
+            <div>
+              <input className="w-72 text-[#888888] border-1 border-[#888888] p-3 rounded-lg" type="date" id="birthday" name="birthday"></input>
+            </div>
+          </div>
+          <div className="block mr-6">
+            <div>
+              <label className="text-[#666666] text-xl mb-1.5" for="To">To</label>
+            </div>
+            <div>
+              <input className="w-72 text-[#888888] border-1 border-[#888888] p-3 rounded-lg" type="date" id="birthday" name="birthday"></input>
+            </div>
+          </div>
+          <div >
+            <button className="bg-[#1BB8B3] text-white px-14 py-3 text-lg font-medium rounded-xl">
+                Apply
+            </button>
+          </div>
         </div>
-
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Line Chart Placeholder */}
