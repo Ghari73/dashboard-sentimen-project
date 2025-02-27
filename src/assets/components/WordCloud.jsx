@@ -1,35 +1,12 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Chart, registerables } from "chart.js";
 import { WordCloudController, WordElement } from "chartjs-chart-wordcloud";
-import { fetchSentimentCloud } from "../../api/restApi";
 
 Chart.register(...registerables, WordCloudController, WordElement);
 
-const WordCloud = ({ options }) => {
+const WordCloud = ({ words, options }) => {
     const chartRef = useRef(null);
     const chartInstance = useRef(null);
-    const [words, setWords] = useState([]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                console.log("🔄 Fetching word cloud data...");
-                const data = await fetchSentimentCloud();
-                
-                const transformedData = data.map(item => ({
-                    text: item.word,
-                    size: item.frequency
-                }));
-                
-                setWords(transformedData);
-                console.log("📊 Word cloud data transformed:", transformedData);
-            } catch (error) {
-                console.error("❌ Error fetching word cloud data:", error);
-            }
-        };
-
-        fetchData();
-    }, []);
 
     useEffect(() => {
         if (!chartRef.current || words.length === 0) return;
@@ -87,7 +64,7 @@ const WordCloud = ({ options }) => {
     };
 
     return (
-        <div style={{ width: "100%", height: "400px", overflow: "hidden" }}>
+        <div style={{ width: "100%", height: "600px", overflow: "hidden" }}>
             <canvas ref={chartRef} style={{ width: "100%", height: "100%" }} />
         </div>
     );

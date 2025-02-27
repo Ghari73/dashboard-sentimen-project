@@ -145,7 +145,20 @@ export const fetchSentimentCloud = async () => {
         });
 
         console.log("✅ Sentiment cloud data fetched successfully:", response.data);
-        return response.data;
+
+        // Pisahkan kata berdasarkan sentimen
+        const positiveWords = response.data
+          .filter((item) => item.sentiment === "1")
+          .map((item) => ({ text: item.word, size: item.frequency }));
+
+        const negativeWords = response.data
+          .filter((item) => item.sentiment === "0")
+          .map((item) => ({ text: item.word, size: item.frequency }));
+
+        console.log("🔹 Positive Words:", positiveWords);
+        console.log("🔻 Negative Words:", negativeWords);
+
+        return { positive: positiveWords, negative: negativeWords };
     } catch (error) {
         console.error("❌ Error fetching sentiment cloud data:", error.message);
         throw new Error('Failed to fetch sentiment cloud data: ' + error.message);
@@ -201,6 +214,56 @@ export const fetchLatestDate = async () => {
         console.error("❌ Error fetching app detail data:", error.message);
         throw new Error('Failed to fetch app detail data: ' + error.message);
     }
+};
+
+export const fetchAppDetail = async () => {
+    try {
+        console.log("⏳ Fetching app details...");
+        
+        const token = localStorage.getItem('userToken'); // Ambil token
+        if (!token) {
+            throw new Error("Token not found in localStorage.");
+        }
+
+        console.log("🔑 Using Bearer Token:", token);
+
+        const response = await api.get('/data/app-detail', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        console.log("✅ App details fetched successfully:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("❌ Error fetching app details:", error.message);
+        throw new Error('Failed to fetch app details: ' + error.message);
+    }
+};
+
+export const fetchLatestDate = async () => {
+    try {
+        console.log("⏳ Fetching app latest date...");
+
+        const token = localStorage.getItem('userToken');
+        if (!token) {
+            throw new Error("Token not found in localStorage.");
+        }
+
+        console.log("🔑 Using Bearer Token:", token);
+
+        const response = await api.get('/data/latest-review-date', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        console.log("✅ Latest date data fetched successfully:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("❌ Error fetching app detail data:", error.message);
+        throw new Error('Failed to fetch app detail data: ' + error.message);
+    }
 };
 
 export default api;
