@@ -1,178 +1,156 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { GrLinkNext, GrLinkPrevious } from "react-icons/gr";
-import { fetchAllReview } from "../../api/restApi";
+// src/assets/components/TableComponent.jsx
+import '../styles/TableComponent.css'; // Import CSS file
+import React, { useState, useEffect } from 'react';
+import { fetchPriorityReviews } from '../../api/restApi';
 
 const TableComponent = () => {
-  const [data, setData] = useState([]);
-  const [searchText, setSearchText] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [searchKeyword, setSearchKeyword] = useState('');
   const pageSize = 10;
+  const [hasNextPage, setHasNextPage] = useState(true); // State baru
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const result = await fetchAllReview();
+  // Tambahkan state totalItems
+const [totalItems, setTotalItems] = useState(0);
 
-        const formattedData = result.map((item) => ({
-          id: item.reviewId,
-          comment: item.content,
-          rating: item.score,
-          date: new Date(item.at).toLocaleDateString(),
-          relevance: item.thumbsUpCount,
-          sentiment: item.sentiment === "1" ? "Positive" : "Negative",
-          appVersion: item.appVersion || "N/A",
-        }));
-
-        setData(formattedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchText]);
-
-  const sortedData = useMemo(() => {
-    let sortableData = [...data];
-    if (sortConfig.key) {
-      sortableData.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === "asc" ? -1 : 1;
-        }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === "asc" ? 1 : -1;
-        }
-        return 0;
-      });
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      console.log("⏳ Mulai fetch data untuk page:", page, "keyword:", searchKeyword);
+      
+      const offset = (page - 1) * pageSize;
+      const data = await fetchPriorityReviews(offset, searchKeyword);
+      
+      // Cek apakah data yang diterima kurang dari pageSize (artinya sudah halaman terakhir)
+      setHasNextPage(data.length === pageSize);
+      setReviews(data);
+    } catch (error) {
+      console.error("❌ Error:", error);
+    } finally {
+      setLoading(false);
     }
-    return sortableData;
-  }, [data, sortConfig]);
-
-  const filteredData = useMemo(() => {
-    return sortedData.filter((row) =>
-      Object.values(row)
-        .join(" ")
-        .toLowerCase()
-        .includes(searchText.toLowerCase())
-    );
-  }, [searchText, sortedData]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filteredData]);
-
-  const totalPages = Math.max(1, Math.ceil(filteredData.length / pageSize));
-  const currentData = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return filteredData.slice(start, start + pageSize);
-  }, [filteredData, currentPage]);
-
-  const handleSort = (key) => {
-    let direction = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
-    }
-    setSortConfig({ key, direction });
   };
 
+  fetchData();
+}, [page, searchKeyword]);
+
+// Hitung total halaman
+const totalPages = Math.ceil(totalItems / pageSize);
+
+// Kondisi tombol
+const isNextDisabled = page >= totalPages;
+const isPrevDisabled = page <= 1;
+
+const handleNext = () => {
+  console.log("⏭️ Next button clicked");
+  setPage(prev => prev + 1);
+};
+
+const handlePrev = () => {
+  console.log("⏮️ Previous button clicked");
+  setPage(prev => Math.max(prev - 1, 1));
+};
+
+const handleSearch = (e) => {
+  console.log("🔍 Search keyword changed:", e.target.value);
+  setSearchKeyword(e.target.value);
+  setPage(1); // Reset ke halaman 1 saat search
+};
+  
+  useEffect(() => {
+      const fetchData = async () => {
+          try {
+              setLoading(true);
+              const offset = (page - 1) * pageSize;
+              const data = await fetchPriorityReviews(offset, searchKeyword);
+              setReviews(data);
+
+              // Hitung total pages berdasarkan jumlah data yang diterima
+              if (data.length < pageSize) {
+                  setTotalPages(page);
+              }
+          } catch (error) {
+              console.error("Error fetching reviews:", error);
+          } finally {
+              setLoading(false);
+          }
+      };
+
+      fetchData();
+  }, [page, searchKeyword]);
+
   return (
-    <div>
-      <div className="flex justify-end items-center mb-4">
-        <input
-          type="text"
-          placeholder="Search..."
-          className="border p-2 rounded w-1/3"
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-        />
-      </div>
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse border border-gray-300 rounded-lg shadow-lg">
-          <thead className="bg-gray-200">
-            <tr>
-              {[
-                "Review Id",
-                "Comment",
-                "Rating",
-                "Date",
-                "Relevance",
-                "Sentiment",
-                "App Version",
-              ].map((col) => (
-                <th
-                  key={col}
-                  className="p-3 border cursor-pointer"
-                  onClick={() => handleSort(col.toLowerCase().replace(/ /g, ""))}
-                >
-                  {col}{" "}
-                  {sortConfig.key === col.toLowerCase().replace(/ /g, "")
-                    ? sortConfig.direction === "asc"
-                      ? "↑"
-                      : "↓"
-                    : ""}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {currentData.length > 0 ? (
-              currentData.map((row) => (
-                <tr key={row.id} className="border-b hover:bg-gray-100">
-                  <td className="p-3 border">{row.id}</td>
-                  <td className="p-3 border">{row.comment}</td>
-                  <td className="p-3 border text-center">{row.rating}</td>
-                  <td className="p-3 border text-center">{row.date}</td>
-                  <td className="p-3 border text-center">{row.relevance}</td>
-                  <td className="p-3 border text-center">{row.sentiment}</td>
-                  <td className="p-3 border text-center">{row.appVersion}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="7" className="text-center p-3">
-                  No data found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-      <div className="flex justify-between items-center mt-4">
-        <button
-          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-          className={`px-5 py-3 bg-gray-300 flex items-center rounded-xl ${
-            currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-          disabled={currentPage === 1}
+      <div>
+          {/* Search Bar */}
+          <div className="search-container">
+  <input
+    type="text"
+    placeholder="Search..."
+    value={searchKeyword}
+    onChange={handleSearch}
+    className="search-input"
+  />
+  <div className="search-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0z"/>
+    </svg>
+  </div>
+</div>
+
+          {/* Loading State */}
+          {loading && <div>Loading...</div>}
+
+          {/* Table */}
+          <table className="review-table">
+              <thead>
+                  <tr>
+                      <th>Review Id</th>
+                      <th>Comment</th>
+                      <th>Rating</th>
+                      <th>Date</th>
+                      <th>Relevance</th>
+                      <th>Sentiment</th>
+                      <th>App Version</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {reviews.map(review => (
+                      <tr key={review.reviewId}>
+                          <td>{review.reviewId}</td>
+                          <td>{review.content}</td>
+                          <td>{review.score}</td>
+                          <td>{new Date(review.at).toLocaleDateString()}</td>
+                          <td>{review.thumbsUpCount}</td>
+                          <td>{review.sentiment === "1" ? "positive" : "negative"}</td>
+                          <td>{review.appVersion}</td>
+                      </tr>
+                  ))}
+              </tbody>
+          </table>
+
+          {/* Pagination */}
+      <div className="pagination">
+        <button 
+          onClick={handlePrev}
+          disabled={page === 1}
+          className="pagination-button"
+          style={{ backgroundColor: page === 1 ? '#cccccc' : '#0E8783' }}
         >
-          <div className="mr-2">
-            <GrLinkPrevious />
-          </div>{" "}
           Previous
         </button>
-        <span>
-          {" "}
-          {currentPage} of {totalPages}{" "}
-        </span>
-        <button
-          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-          className={`px-5 py-3 bg-[#1BB8B3] flex items-center text-white rounded-xl ${
-            currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-          disabled={currentPage === totalPages}
+        <span className="page-info">Page {page}</span>
+        <button 
+          onClick={handleNext}
+          disabled={!hasNextPage}
+          className="pagination-button"
+          style={{ backgroundColor: !hasNextPage ? '#cccccc' : '#0E8783' }}
         >
-          Next{" "}
-          <div className="ml-2">
-            <GrLinkNext />
-          </div>
+          Next
         </button>
       </div>
-    </div>
+      </div>
   );
 };
 

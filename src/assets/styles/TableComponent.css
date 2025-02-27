@@ -1,0 +1,129 @@
+/* src/assets/styles/TableComponent.css */
+
+.review-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.review-table th,
+.review-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.review-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.review-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.review-table tr:hover {
+    background-color: #d6eaf8;
+}
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.pagination button {
+    padding: 5px 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    color: white;
+}
+
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search-bar input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 200px;
+}
+
+.search-bar button {
+    padding: 8px 12px;
+    background-color: #0E8783;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+  
+  .search-input {
+    padding: 12px 40px 12px 15px;
+    border: 2px solid #0E8783;
+    border-radius: 25px;
+    width: 300px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+  
+  .search-input:focus {
+    outline: none;
+    border-color: #006666;
+    box-shadow: 0 0 0 2px rgba(14, 135, 131, 0.2);
+  }
+  
+  .search-icon {
+    position: absolute;
+    right: 15px;
+    color: #0E8783;
+    pointer-events: none;
+  }
+
+  .pagination {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .pagination button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: #0E8783;
+    color: white;
+    transition: all 0.3s ease;
+  }
+  
+  .pagination button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .pagination button:hover:not(:disabled) {
+    background-color: #006666;
+  }
+  
+  .page-info {
+    margin: 0 10px;
+    font-weight: bold;
+    color: #333;
+  }

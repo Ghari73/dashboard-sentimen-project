@@ -216,4 +216,31 @@ export const fetchLatestDate = async () => {
     }
 };
 
+// src/api/restAPI.jsx
+export const fetchPriorityReviews = async (offset = 0, keyword = '') => {
+    try {
+      console.log("🚀 Fetching reviews with offset:", offset, "keyword:", keyword);
+      
+      let endpoint;
+      if (keyword) {
+        endpoint = `/data/priority-review/search?offset=${offset}&keyword=${encodeURIComponent(keyword)}`;
+      } else {
+        endpoint = `/data/priority-review?offset=${offset}`;
+      }
+  
+      const token = localStorage.getItem('userToken');
+      if (!token) throw new Error("Token not found");
+  
+      const response = await api.get(endpoint, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      console.log("✅ Data diterima:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("❌ Error fetching reviews:", error);
+      throw error;
+    }
+  };
+
 export default api;
