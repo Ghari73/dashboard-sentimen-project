@@ -31,7 +31,8 @@ import logo from './assets/images/logo.png'; // Sesuaikan path
 import WordCloud from './assets/components/WordCloud'; // Sesuaikan path
 import wordData from './assets/data/wordData';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { fetchAppDetail, fetchLatestDate } from "./api/restApi";
 
 const Dashboard = () => {
   const [filterVersion, setFilterVersion] = useState('All Versions');
@@ -83,6 +84,42 @@ const Dashboard = () => {
     comment: `This is comment number ${i + 1}`,
   }));
 
+  const [appDetail, setAppDetail] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [latestDate, setLatestDate] = useState(null);
+  const [loadingLD, setLoadingLD] = useState(true);
+  const [errorLD, setErrorLD] = useState(null);
+
+  useEffect(() => {
+    const getAppDetail = async () => {
+        try {
+            const data = await fetchAppDetail();
+            setAppDetail(data);
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getLatestDate = async () => {
+      try {
+          const data = await fetchLatestDate();
+          setLatestDate(data);
+      } catch (error) {
+          setLatestDate(error.message);
+      } finally {
+          setLoadingLD(false);
+      }
+  };
+
+
+    getAppDetail();
+    getLatestDate();
+}, []);
+
   return (
     <AuthProvider>
       <div style={{ fontFamily: "'Roboto', sans-serif" }} className="min-h-screen bg-gray-50">
@@ -112,43 +149,75 @@ const Dashboard = () => {
             </div>
           </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white p-4 flex items-center rounded-lg shadow-sm border border-gray-100">
+          <div className="bg-white p-4 flex items-center rounded-lg shadow-sm border border-gray-100">
               <div className="w-16 h-16 bg-[#0E8783] rounded-2xl p-2.5 mr-6 ">
                 <IoCalendarClear size={40} color="white"  />
               </div>
               <div>
                 <h3 className="text-xl font-medium text-gray-500">Latest Date</h3>
-                <p className="text-4xl font-semibold text-gray-800 mt-2">25 February 2025</p>
-                <p className="text-4xl font-semibold text-gray-800 mt-2">22:33:19</p>
+                {loadingLD ? (
+                        <p className="text-4xl font-semibold text-gray-800 mt-2">Loading...</p>
+                    ) : errorLD ? (
+                        <p className="text-red-500 text-lg">Error</p>
+                    ) : (
+                      <p className="text-4xl font-semibold text-gray-800 mt-2">
+                        {latestDate ? latestDate.date : "No Data"}
+                    </p>
+                )}
               </div>
             </div>
             <div className="bg-white p-4 flex items-center rounded-lg shadow-sm border border-gray-100">
-              <div className="w-16 h-16 bg-[#1BB8B3] rounded-2xl p-1.5 mr-6 ">
-                <RiDatabaseFill size={50} color="white"  />
-              </div>
-              <div>
-                <h3 className="text-xl font-medium text-gray-500">Reviews Count</h3>
-                <p className="text-4xl font-semibold text-gray-800 mt-2">32421</p>
-              </div>
+                <div className="w-16 h-16 bg-[#1BB8B3] rounded-2xl p-1.5 mr-6">
+                    <RiDatabaseFill size={50} color="white" />
+                </div>
+                <div>
+                    <h3 className="text-xl font-medium text-gray-500">Reviews Count</h3>
+                    {loading ? (
+                        <p className="text-4xl font-semibold text-gray-800 mt-2">Loading...</p>
+                    ) : error ? (
+                        <p className="text-red-500 text-lg">Error</p>
+                    ) : (
+                        <p className="text-4xl font-semibold text-gray-800 mt-2">
+                            {appDetail ? appDetail["Number of Reviews"].toLocaleString() : "No Data"}
+                        </p>
+                    )}
+                </div>
+            </div>
+            {/* APP SCORE */}
+            <div className="bg-white p-4 flex items-center rounded-lg shadow-sm border border-gray-100">
+                <div className="w-16 h-16 bg-[#1BB8B3] rounded-2xl p-1.5 mr-6">
+                    <MdStar size={50} color="white" />
+                </div>
+                <div>
+                    <h3 className="text-xl font-medium text-gray-500">App Score</h3>
+                    {loading ? (
+                        <p className="text-4xl font-semibold text-gray-800 mt-2">Loading...</p>
+                    ) : error ? (
+                        <p className="text-red-500 text-lg">Error</p>
+                    ) : (
+                        <p className="text-4xl font-semibold text-gray-800 mt-2">
+                            {appDetail ? appDetail["App Score"].toFixed(2) : "No Data"}
+                        </p>
+                    )}
+                </div>
             </div>
             <div className="bg-white p-4 flex items-center rounded-lg shadow-sm border border-gray-100">
-              <div className="w-16 h-16 bg-[#1BB8B3] rounded-2xl p-1.5 mr-6 ">
-                <MdStar size={50} color="white"  />
-              </div>
-              <div>
-                <h3 className="text-xl font-medium text-gray-500">App Score</h3>
-                <p className="text-4xl font-semibold text-gray-800 mt-2">4.6</p>
-              </div>
-            </div>
-            <div className="bg-white p-4 flex items-center rounded-lg shadow-sm border border-gray-100">
-              <div className="w-16 h-16 bg-[#DD9838] rounded-2xl p-1.5 mr-6 ">
-                <MdFileDownload size={50} color="white"  />
-              </div>
-              <div>
-                <h3 className="text-xl font-medium text-gray-500">Downloads</h3>
-                <p className="text-4xl font-semibold text-gray-800 mt-2">1.000.000+</p>
-              </div>
-            </div>
+                <div className="w-16 h-16 bg-[#DD9838] rounded-2xl p-1.5 mr-6">
+                    <MdFileDownload size={50} color="white" />
+                </div>
+                <div>
+                    <h3 className="text-xl font-medium text-gray-500">Downloads</h3>
+                    {loading ? (
+                        <p className="text-4xl font-semibold text-gray-800 mt-2">Loading...</p>
+                    ) : error ? (
+                        <p className="text-red-500 text-lg">Error</p>
+                    ) : (
+                        <p className="text-4xl font-semibold text-gray-800 mt-2">
+                            {appDetail ? appDetail["App Downloads"] : "No Data"}
+                        </p>
+                    )}
+                </div>
+        </div>
         </div>
         </div>
 
