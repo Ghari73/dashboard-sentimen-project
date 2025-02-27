@@ -24,6 +24,7 @@ COPY --from=build /app/dist /usr/share/nginx/html
 
 # Expose port 80 to allow traffic
 
+COPY nginx.conf /etc/nginx/nginx.conf
 
 # Start Nginx when the container starts
 CMD ["nginx", "-g", "daemon off;"]
