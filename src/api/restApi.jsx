@@ -5,7 +5,7 @@ const api = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
-    timeout: 10000 
+    timeout: 30000 
 })
 
 export const fetchLogin = async (postData) => {
@@ -124,6 +124,31 @@ export const fetchSentimentDistribution = async (token) => {
     } catch (error) {
         console.error("Error fetching sentiment data:", error);
         throw error;
+    }
+};
+
+export const fetchSentimentCloud = async () => {
+    try {
+        console.log("⏳ Fetching sentiment cloud data...");
+        
+        const token = localStorage.getItem('userToken');
+        if (!token) {
+            throw new Error("Token not found in localStorage.");
+        }
+
+        console.log("🔑 Using Bearer Token:", token);
+        
+        const response = await api.get('/data/sentiment-cloud', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        console.log("✅ Sentiment cloud data fetched successfully:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("❌ Error fetching sentiment cloud data:", error.message);
+        throw new Error('Failed to fetch sentiment cloud data: ' + error.message);
     }
 };
 
