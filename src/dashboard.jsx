@@ -51,12 +51,6 @@ const Dashboard = () => {
     "App Score": "Loading...",
     "Number of Reviews": "Loading..."
 });
-
-const [latestDate, setLatestDate] = useState(null);
-  const [loadingLD, setLoadingLD] = useState(true);
-  const [errorLD, setErrorLD] = useState(null);
-
-
 useEffect(() => {
     const getAppDetail = async () => {
         try {
@@ -122,6 +116,38 @@ useEffect(() => {
     comment: `This is comment number ${i + 1}`,
   }));
 
+  const [latestDate, setLatestDate] = useState(null);
+  const [loadingLD, setLoadingLD] = useState(true);
+  const [errorLD, setErrorLD] = useState(null);
+
+  useEffect(() => {
+    const getAppDetail = async () => {
+        try {
+            const data = await fetchAppDetail();
+            setAppDetail(data);
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getLatestDate = async () => {
+      try {
+          const data = await fetchLatestDate();
+          setLatestDate(data);
+      } catch (error) {
+          setLatestDate(error.message);
+      } finally {
+          setLoadingLD(false);
+      }
+  };
+
+
+    getAppDetail();
+    getLatestDate();
+}, []);
+
   return (
     <AuthProvider>
       <div style={{ fontFamily: "'Roboto', sans-serif" }} className="min-h-screen bg-gray-50">
@@ -169,6 +195,7 @@ useEffect(() => {
                 <p className="text-3xl font-medium text-gray-800 mt-2">{appDetail["Number of Reviews"]}</p>
               </div>
             </div>
+            {/* APP SCORE */}
             <div className="bg-white p-4 flex items-center rounded-lg shadow-sm border border-gray-100">
               <div className="w-16 h-16 bg-[#1BB8B3] rounded-2xl p-1.5 mr-6 ">
                 <MdStar size={50} color="white"  />

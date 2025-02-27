@@ -163,6 +163,7 @@ export const fetchSentimentCloud = async () => {
         console.error("❌ Error fetching sentiment cloud data:", error.message);
         throw new Error('Failed to fetch sentiment cloud data: ' + error.message);
     }
+
 };
 
 export const fetchAppDetail = async () => {
