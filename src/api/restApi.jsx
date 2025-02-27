@@ -168,56 +168,6 @@ export const fetchSentimentCloud = async () => {
 
 export const fetchAppDetail = async () => {
     try {
-        console.log("⏳ Fetching app detail data...");
-
-        const token = localStorage.getItem('userToken');
-        if (!token) {
-            throw new Error("Token not found in localStorage.");
-        }
-
-        console.log("🔑 Using Bearer Token:", token);
-
-        const response = await api.get('/data/app-detail', {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        console.log("📊 API Response:", response.data);
-        console.log("✅ App detail data fetched successfully:", response.data);
-        return response.data;
-    } catch (error) {
-        console.error("❌ Error fetching app detail data:", error.message);
-        throw new Error('Failed to fetch app detail data: ' + error.message);
-    }
-};
-
-export const fetchLatestDate = async () => {
-    try {
-        console.log("⏳ Fetching app latest date...");
-
-        const token = localStorage.getItem('userToken');
-        if (!token) {
-            throw new Error("Token not found in localStorage.");
-        }
-
-        console.log("🔑 Using Bearer Token:", token);
-
-        const response = await api.get('/data/latest-review-date', {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-
-        console.log("✅ Latest date data fetched successfully:", response.data);
-        return response.data;
-    } catch (error) {
-        console.error("❌ Error fetching app detail data:", error.message);
-        throw new Error('Failed to fetch app detail data: ' + error.message);
-    }
-};
-
-export const fetchAppDetail = async () => {
-    try {
         console.log("⏳ Fetching app details...");
         
         const token = localStorage.getItem('userToken'); // Ambil token

@@ -51,12 +51,6 @@ const Dashboard = () => {
     "App Score": "Loading...",
     "Number of Reviews": "Loading..."
 });
-
-const [latestDate, setLatestDate] = useState(null);
-  const [loadingLD, setLoadingLD] = useState(true);
-  const [errorLD, setErrorLD] = useState(null);
-
-
 useEffect(() => {
     const getAppDetail = async () => {
         try {
@@ -121,10 +115,6 @@ useEffect(() => {
     appVersion: `v${Math.floor(Math.random() * 10)}.${Math.floor(Math.random() * 10)}`,
     comment: `This is comment number ${i + 1}`,
   }));
-
-  const [appDetail, setAppDetail] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   const [latestDate, setLatestDate] = useState(null);
   const [loadingLD, setLoadingLD] = useState(true);
@@ -212,7 +202,9 @@ useEffect(() => {
               </div>
               <div>
                 <h3 className="text-xl font-medium text-gray-500">App Score</h3>
-                <p className="text-3xl font-medium text-gray-800 mt-2">{appDetail["App Score"].toPrecision(3)}</p>
+                <p className="text-3xl font-medium text-gray-800 mt-2">
+                {appDetail?.["App Score"] ? Number(appDetail["App Score"]).toPrecision(3) : "No Data"}
+                  </p>
               </div>
             </div>
             <div className="bg-white p-4 flex items-center rounded-lg shadow-sm border border-gray-100">
