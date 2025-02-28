@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Plot from "react-plotly.js";
 import { fetchScoreFrequency } from "../../api/restApi";
 
-const BarChart = ({ fromDate, toDate }) => {
+const BarChart = ({ fromDate, toDate}) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -36,7 +36,7 @@ const BarChart = ({ fromDate, toDate }) => {
     };
 
     getData();
-  }, []);
+  }, [fromDate, toDate]);
 
   return ( 
     <div className="w-full mx-auto bg-white p-4 shadow-md rounded-md">

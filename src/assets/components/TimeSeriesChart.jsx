@@ -3,20 +3,22 @@ import Plot from "react-plotly.js";
 import { fetchAllSentiment } from "../../api/restApi";
 
 
-const TimeSeriesChart = ({fromDate, toDate}) => {
+const TimeSeriesChart = ({ fromDate, toDate }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [revision, setRevision] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
-      console.log("🔄 Fetching sentiment time series data...");
+      console.log("🔄 Fetching sentiment time series data...", { fromDate, toDate });
 
       try {
         const result = await fetchAllSentiment(fromDate, toDate);
         console.log("📊 Raw API Response:", result);
+
         // Pisahkan data berdasarkan sentiment (0 = negatif, 1 = positif)
-        
+        setRevision(true);
         const negativeSentiment = result.filter((item) => item.sentiment === "0");
         const positiveSentiment = result.filter((item) => item.sentiment === "1");
 
@@ -25,9 +27,9 @@ const TimeSeriesChart = ({fromDate, toDate}) => {
           type: "scatter",
           mode: "lines+markers",
           name: "Negative",
-          x: negativeSentiment.map((item) => item.reviewDate),  // API pakai reviewDate
-          y: negativeSentiment.map((item) => item.sentimentCount),  // API pakai sentimentCount
-          line: { color: "#FF7F0E" },// Warna lebih lembut
+          x: negativeSentiment.map((item) => item.reviewDate),
+          y: negativeSentiment.map((item) => item.sentimentCount),
+          line: { color: "#FF7F0E" }, // Warna lebih lembut
           marker: { size: 6 },
         };
 
@@ -42,7 +44,8 @@ const TimeSeriesChart = ({fromDate, toDate}) => {
           marker: { size: 6 },
         };
 
-        setData([trace1, trace2]);
+        setData([ {...trace1}, {...trace2} ]);
+        setRevision(prev => !prev);
         console.log("✅ Processed Data:", { trace1, trace2 });
 
       } catch (err) {
@@ -55,10 +58,11 @@ const TimeSeriesChart = ({fromDate, toDate}) => {
     };
 
     getData();
-  }, []);
+  }, [fromDate, toDate]);
 
   return (
     <Plot
+      key={revision}
       data={data}
       layout={{
         xaxis: {
@@ -82,7 +86,6 @@ const TimeSeriesChart = ({fromDate, toDate}) => {
         }}
         config={{ responsive: true, displayModeBar: false }}
         style={{ width: "100%"}}
-        
     />
   );
 };
