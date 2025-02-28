@@ -311,7 +311,7 @@ const applyFilter = () => {
               <h2 className="text-4xl text-[#DD9838] font-medium mb-4 mr-2">Negative</h2>
               <h2 className="text-4xl text-[#666666] font-medium mb-4">Wordcloud</h2>      
             </div>
-              {/* <WordCloud
+              <WordCloud
               words={wordData.negative}
               options={{
                 color: "orange",
@@ -320,14 +320,14 @@ const applyFilter = () => {
                 rotate: () => (Math.random() > 0.5 ? 0 : 90),
                 randomColor: false,
               }}
-            /> */}
+            />
           </div>
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className='flex'>
               <h2 className="text-4xl text-[#1BB8B3] font-medium mb-4 mr-2">Positive</h2>
               <h2 className="text-4xl text-[#666666] font-medium mb-4">Wordcloud</h2>      
             </div>
-            {/* <WordCloud
+            <WordCloud
             words={wordData.positive}
             options={{
               color: "teal",
@@ -336,7 +336,7 @@ const applyFilter = () => {
               rotate: () => (Math.random() > 0.5 ? 0 : 90),
               randomColor: false,
             }}
-          /> */}
+          />
           </div>
         </div>
 
