@@ -11,7 +11,6 @@ const api = axios.create({
 export const fetchLogin = async (postData) => {
     try{
         const response = await api.post('auth/login',postData)
-        alert('Login Successful')
         return response.data
     } catch (error) {
         if (error.code === 'ECONNABORTED') {
@@ -49,8 +48,8 @@ export const fetchScoreFrequency = async (fromDate = "", toDate = "") => {
         let endpoint = '/data/score-frequency';
         const queryParams = [];
 
-        if (fromDate) queryParams.push(`from=${encodeURIComponent(fromDate)}`);
-        if (toDate) queryParams.push(`to=${encodeURIComponent(toDate)}`);
+        if (fromDate) queryParams.push(`startDate=${encodeURIComponent(fromDate)}`);
+        if (toDate) queryParams.push(`endDate=${encodeURIComponent(toDate)}`);
 
         if (queryParams.length > 0) {
             endpoint += `?${queryParams.join("&")}`;
@@ -73,7 +72,7 @@ export const fetchScoreFrequency = async (fromDate = "", toDate = "") => {
 
 export const fetchAllSentiment = async (fromDate = '', toDate = '') => {
     try {
-        console.log("⏳ Fetching all sentiment data...");
+        console.log("⏳ Fetching all sentiment data...", { fromDate, toDate });
 
         const token = localStorage.getItem('userToken'); // Ambil token
         if (!token) {
@@ -84,8 +83,11 @@ export const fetchAllSentiment = async (fromDate = '', toDate = '') => {
 
         // Buat endpoint dengan filter dari `fromDate` dan `toDate`
         let endpoint = '/data/all-sentiment';
-        if (fromDate && toDate) {
-            endpoint += `?from=${encodeURIComponent(fromDate)}&to=${encodeURIComponent(toDate)}`;
+        console.log(`?startDate=${fromDate}&endDate=${toDate}`)
+        
+        if (fromDate && toDate) {    
+            endpoint += `?startDate=${fromDate}&endDate=${toDate}`;
+            console.log('NYIMEMENEOUIEOEUB: ', endpoint)
         }
 
         const response = await api.get(endpoint, {
@@ -138,7 +140,7 @@ export const fetchSentimentDistribution = async (token, from = "", to = "") => {
     try {
         let endpoint = "/data/sentiment-distribution";
         if (from && to) {
-            endpoint += `?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+            endpoint += `?startDate=${encodeURIComponent(from)}&endDate=${encodeURIComponent(to)}`;
         }
 
         const response = await api.get(endpoint, {
@@ -166,7 +168,7 @@ export const fetchSentimentCloud = async (fromDate = '', toDate = '') => {
         // Buat endpoint dengan filter dari `fromDate` dan `toDate`
         let endpoint = '/data/sentiment-cloud';
         if (fromDate && toDate) {
-            endpoint += `?from=${encodeURIComponent(fromDate)}&to=${encodeURIComponent(toDate)}`;
+            endpoint += `?startDate=${encodeURIComponent(fromDate)}&endDate=${encodeURIComponent(toDate)}`;
         }
 
         const response = await api.get(endpoint, {
@@ -260,8 +262,8 @@ export const fetchPriorityReviews = async (offset = 0, keyword = '', from = '', 
 
         // Tambahkan filter `from` dan `to` jika ada
         const params = new URLSearchParams();
-        if (from) params.append("from", from);
-        if (to) params.append("to", to);
+        if (from) params.append("startDate", from);
+        if (to) params.append("endDate", to);
 
         if (params.toString()) {
             endpoint += `&${params.toString()}`;

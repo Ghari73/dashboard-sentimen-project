@@ -4,39 +4,38 @@ import React, { useState, useEffect } from 'react';
 import { fetchPriorityReviews } from '../../api/restApi';
 import {Search, ArrowLeft, ArrowRight} from 'lucide-react';
 
-const TableComponent = () => {
+const TableComponent = ({ from, to }) => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState('');
   const pageSize = 10;
-  const [hasNextPage, setHasNextPage] = useState(true); // State baru
-  const [totalPages, setTotalPages] = useState()
-  // Tambahkan state totalItems
-const [totalItems, setTotalItems] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(true);
+  const [totalPages, setTotalPages] = useState();
+  const [totalItems, setTotalItems] = useState(0);
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      console.log("⏳ Mulai fetch data untuk page:", page, "keyword:", searchKeyword);
-      
-      const offset = (page - 1) * pageSize;
-      const data = await fetchPriorityReviews(offset, searchKeyword);
-      
-      // Cek apakah data yang diterima kurang dari pageSize (artinya sudah halaman terakhir)
-      setHasNextPage(data.currentPage !== data.totalPages);
-      setReviews(data.data);
-      setTotalPages(data.totalPages)
-    } catch (error) {
-      console.error("❌ Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        console.log("⏳ Fetching data for page:", page, "keyword:", searchKeyword, "from:", from, "to:", to);
 
-  fetchData();
-}, [page, searchKeyword]);
+        const offset = (page - 1) * pageSize;
+        const data = await fetchPriorityReviews(offset, searchKeyword, from, to);
+
+        setHasNextPage(data.currentPage !== data.totalPages);
+        setReviews(data.data);
+        setTotalPages(data.totalPages);
+        setTotalItems(data.totalItems);
+      } catch (error) {
+        console.error("❌ Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [page, searchKeyword, from, to]); 
 
 // Hitung total halaman
 // const totalPages = Math.ceil(totalItems / pageSize);

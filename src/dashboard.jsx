@@ -51,29 +51,6 @@ const Dashboard = () => {
     "App Score": "Loading...",
     "Number of Reviews": "Loading..."
 });
-useEffect(() => {
-    const getAppDetail = async () => {
-        try {
-            const data = await fetchAppDetail();
-            setAppDetail(data);
-        } catch (error) {
-            console.error("Error fetching app detail:", error);
-        }
-    };
-    const getLatestDate = async () => {
-      try {
-          const data = await fetchLatestDate();
-          setLatestDate(data);
-      } catch (error) {
-          setLatestDate(error.message);
-      } finally {
-          setLoadingLD(false);
-      }
-  };
-
-    getAppDetail();
-    getLatestDate();
-}, []);
 
   useEffect(() => {
     const getData = async () => {
@@ -170,6 +147,7 @@ const applyFilter = () => {
   
   setFilterApplied(true); // Trigger update di PieChart
   console.log("📅 Filter Applied:", {filterApplied, fromDate, toDate });
+  // setFilterApplied(false);
 };
 
   return (
@@ -288,7 +266,8 @@ const applyFilter = () => {
             {/* <TimeSeriesChart/> */}
             <TimeSeriesChart
                   fromDate={filterApplied ? fromDate : undefined} 
-                  toDate={filterApplied ? toDate : undefined} 
+                  toDate={filterApplied ? toDate : undefined}
+                  // filterApplied={ filterApplied } 
             />
           </div>
 
@@ -300,6 +279,7 @@ const applyFilter = () => {
             <BarChart data={barChartData}
                   fromDate={filterApplied ? fromDate : undefined} 
                   toDate={filterApplied ? toDate : undefined} 
+                  // filterApplied={ filterApplied } 
             />
             {/* </div> */}
 
@@ -312,6 +292,7 @@ const applyFilter = () => {
                <PieChart 
                   fromDate={filterApplied ? fromDate : undefined} 
                   toDate={filterApplied ? toDate : undefined} 
+                  // filterApplied={ filterApplied } 
                 />
 
             {/* </div> */}
@@ -325,23 +306,23 @@ const applyFilter = () => {
               <h2 className="text-4xl text-[#DD9838] font-medium mb-4 mr-2">Negative</h2>
               <h2 className="text-4xl text-[#666666] font-medium mb-4">Wordcloud</h2>      
             </div>
-            <WordCloud
-            words={wordData.negative}
-            options={{
-              color: "orange",
-              fontFamily: "Arial",
-              scale: 1.8,
-              rotate: () => (Math.random() > 0.5 ? 0 : 90),
-              randomColor: false,
-            }}
-          />
+              {/* <WordCloud
+              words={wordData.negative}
+              options={{
+                color: "orange",
+                fontFamily: "Arial",
+                scale: 1.8,
+                rotate: () => (Math.random() > 0.5 ? 0 : 90),
+                randomColor: false,
+              }}
+            /> */}
           </div>
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className='flex'>
               <h2 className="text-4xl text-[#1BB8B3] font-medium mb-4 mr-2">Positive</h2>
               <h2 className="text-4xl text-[#666666] font-medium mb-4">Wordcloud</h2>      
             </div>
-            <WordCloud
+            {/* <WordCloud
             words={wordData.positive}
             options={{
               color: "teal",
@@ -350,7 +331,7 @@ const applyFilter = () => {
               rotate: () => (Math.random() > 0.5 ? 0 : 90),
               randomColor: false,
             }}
-          />
+          /> */}
           </div>
         </div>
 
