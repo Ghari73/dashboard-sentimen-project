@@ -34,10 +34,10 @@ export const fetchLogin = async (postData) => {
 }
 
 // Fungsi fetch score frequency dengan token
-export const fetchScoreFrequency = async () => {
+export const fetchScoreFrequency = async (fromDate = "", toDate = "") => {
     try {
-        console.log("⏳ Fetching score frequency data...");
-        
+        console.log("⏳ Fetching score frequency data...", { fromDate, toDate });
+
         const token = localStorage.getItem('userToken'); // Ambil token dari localStorage
         if (!token) {
             throw new Error("Token not found in localStorage.");
@@ -45,7 +45,18 @@ export const fetchScoreFrequency = async () => {
 
         console.log("🔑 Using Bearer Token:", token);
 
-        const response = await api.get('/data/score-frequency', {
+        // Bangun endpoint dengan query parameter jika tanggal tersedia
+        let endpoint = '/data/score-frequency';
+        const queryParams = [];
+
+        if (fromDate) queryParams.push(`from=${encodeURIComponent(fromDate)}`);
+        if (toDate) queryParams.push(`to=${encodeURIComponent(toDate)}`);
+
+        if (queryParams.length > 0) {
+            endpoint += `?${queryParams.join("&")}`;
+        }
+
+        const response = await api.get(endpoint, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -59,7 +70,8 @@ export const fetchScoreFrequency = async () => {
     }
 };
 
-export const fetchAllSentiment = async () => {
+
+export const fetchAllSentiment = async (fromDate = '', toDate = '') => {
     try {
         console.log("⏳ Fetching all sentiment data...");
 
@@ -70,7 +82,13 @@ export const fetchAllSentiment = async () => {
 
         console.log("🔑 Using Bearer Token:", token);
 
-        const response = await api.get('/data/all-sentiment', {
+        // Buat endpoint dengan filter dari `fromDate` dan `toDate`
+        let endpoint = '/data/all-sentiment';
+        if (fromDate && toDate) {
+            endpoint += `?from=${encodeURIComponent(fromDate)}&to=${encodeURIComponent(toDate)}`;
+        }
+
+        const response = await api.get(endpoint, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -83,6 +101,7 @@ export const fetchAllSentiment = async () => {
         throw new Error('Failed to fetch sentiment data: ' + error.message);
     }
 };
+
 
 // Fungsi fetch all review
 export const fetchAllReview = async () => {
@@ -110,16 +129,22 @@ export const fetchAllReview = async () => {
     }
 }
 
-export const fetchSentimentDistribution = async (token) => {
+export const fetchSentimentDistribution = async (token, from = "", to = "") => {
     if (!token) {
         console.error("⚠ Token tidak tersedia, silakan login ulang.");
-        return null; // Jangan fetch jika token kosong
+        return null;
     }
 
     try {
-        const response = await api.get("/data/sentiment-distribution", {
+        let endpoint = "/data/sentiment-distribution";
+        if (from && to) {
+            endpoint += `?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+        }
+
+        const response = await api.get(endpoint, {
             headers: { Authorization: `Bearer ${token}` },
         });
+
         return response.data;
     } catch (error) {
         console.error("Error fetching sentiment data:", error);
@@ -127,18 +152,24 @@ export const fetchSentimentDistribution = async (token) => {
     }
 };
 
-export const fetchSentimentCloud = async () => {
+export const fetchSentimentCloud = async (fromDate = '', toDate = '') => {
     try {
         console.log("⏳ Fetching sentiment cloud data...");
-        
+
         const token = localStorage.getItem('userToken');
         if (!token) {
             throw new Error("Token not found in localStorage.");
         }
 
         console.log("🔑 Using Bearer Token:", token);
-        
-        const response = await api.get('/data/sentiment-cloud', {
+
+        // Buat endpoint dengan filter dari `fromDate` dan `toDate`
+        let endpoint = '/data/sentiment-cloud';
+        if (fromDate && toDate) {
+            endpoint += `?from=${encodeURIComponent(fromDate)}&to=${encodeURIComponent(toDate)}`;
+        }
+
+        const response = await api.get(endpoint, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -163,8 +194,8 @@ export const fetchSentimentCloud = async () => {
         console.error("❌ Error fetching sentiment cloud data:", error.message);
         throw new Error('Failed to fetch sentiment cloud data: ' + error.message);
     }
-
 };
+
 
 export const fetchAppDetail = async () => {
     try {
@@ -217,30 +248,39 @@ export const fetchLatestDate = async () => {
 };
 
 // src/api/restAPI.jsx
-export const fetchPriorityReviews = async (offset = 0, keyword = '') => {
+export const fetchPriorityReviews = async (offset = 0, keyword = '', from = '', to = '') => {
     try {
-      console.log("🚀 Fetching reviews with offset:", offset, "keyword:", keyword);
-      
-      let endpoint;
-      if (keyword) {
-        endpoint = `/data/priority-review/search?offset=${offset}&keyword=${encodeURIComponent(keyword)}`;
-      } else {
-        endpoint = `/data/priority-review?offset=${offset}`;
-      }
-  
-      const token = localStorage.getItem('userToken');
-      if (!token) throw new Error("Token not found");
-  
-      const response = await api.get(endpoint, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      console.log("✅ Data diterima:", response.data);
-      return response.data;
+        console.log("🚀 Fetching reviews with offset:", offset, "keyword:", keyword, "from:", from, "to:", to);
+
+        let endpoint = `/data/priority-review?offset=${offset}`;
+
+        if (keyword) {
+            endpoint = `/data/priority-review/search?offset=${offset}&keyword=${encodeURIComponent(keyword)}`;
+        }
+
+        // Tambahkan filter `from` dan `to` jika ada
+        const params = new URLSearchParams();
+        if (from) params.append("from", from);
+        if (to) params.append("to", to);
+
+        if (params.toString()) {
+            endpoint += `&${params.toString()}`;
+        }
+
+        const token = localStorage.getItem('userToken');
+        if (!token) throw new Error("Token not found");
+
+        const response = await api.get(endpoint, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        console.log("✅ Data diterima:", response.data);
+        return response.data;
     } catch (error) {
-      console.error("❌ Error fetching reviews:", error);
-      throw error;
+        console.error("❌ Error fetching reviews:", error);
+        throw error;
     }
-  };
+};
+
 
 export default api;

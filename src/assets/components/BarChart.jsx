@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Plot from "react-plotly.js";
 import { fetchScoreFrequency } from "../../api/restApi";
 
-const BarChart = () => {
+const BarChart = ({ fromDate, toDate }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,7 +13,7 @@ const BarChart = () => {
       console.log("🔄 Fetching data for BarChart...");
       
       try {
-        const result = await fetchScoreFrequency();
+        const result = await fetchScoreFrequency(fromDate, toDate);
         console.log("📊 Formatting data for Plotly...");
 
         setData({
@@ -50,8 +50,6 @@ const BarChart = () => {
             {
               x: data.x,
               y: data.y,
-              x: data.x,
-              y: data.y,
               type: "bar",
               marker: {
                 color: ["#7CE1E6", "#B4782D", "#5A908D", "#E6B877", "#2D7068"],
@@ -71,8 +69,8 @@ const BarChart = () => {
             yaxis: {
               title: "Frequency",
               tickmode: "linear",
-              dtick: 100, // Supaya angka di sumbu Y muncul dengan interval yang pas
-              dtick: 100, // Supaya angka di sumbu Y muncul dengan interval yang pas
+              dtick: 1000, // Supaya angka di sumbu Y muncul dengan interval yang pas
+              dtick: 1000, // Supaya angka di sumbu Y muncul dengan interval yang pas
               showline: true, // Menampilkan garis utama sumbu Y
               zeroline: true,
             },

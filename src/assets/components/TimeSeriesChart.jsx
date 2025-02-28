@@ -3,7 +3,7 @@ import Plot from "react-plotly.js";
 import { fetchAllSentiment } from "../../api/restApi";
 
 
-const TimeSeriesChart = () => {
+const TimeSeriesChart = ({fromDate, toDate}) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,7 +13,7 @@ const TimeSeriesChart = () => {
       console.log("🔄 Fetching sentiment time series data...");
 
       try {
-        const result = await fetchAllSentiment();
+        const result = await fetchAllSentiment(fromDate, toDate);
         console.log("📊 Raw API Response:", result);
         // Pisahkan data berdasarkan sentiment (0 = negatif, 1 = positif)
         

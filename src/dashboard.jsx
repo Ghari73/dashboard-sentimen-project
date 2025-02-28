@@ -78,7 +78,7 @@ useEffect(() => {
   useEffect(() => {
     const getData = async () => {
       try {
-        const data = await fetchSentimentCloud(); // Panggil fungsi
+        const data = await fetchSentimentCloud(fromDate, toDate); // Panggil fungsi
         setWordData(data); // Update state
       } catch (error) {
         console.error(error.message);
@@ -87,6 +87,7 @@ useEffect(() => {
 
     getData();
   }, []);
+
   const handleApplyFilters = (newFilters) => {
     setFilters(newFilters);
     console.log('Applied Filters:', newFilters);
@@ -119,7 +120,8 @@ useEffect(() => {
   const [latestDate, setLatestDate] = useState(null);
   const [loadingLD, setLoadingLD] = useState(true);
   const [errorLD, setErrorLD] = useState(null);
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   useEffect(() => {
     const getAppDetail = async () => {
         try {
@@ -147,6 +149,28 @@ useEffect(() => {
     getAppDetail();
     getLatestDate();
 }, []);
+
+// State untuk menyimpan tanggal
+const [fromDate, setFromDate] = useState("");
+const [toDate, setToDate] = useState("");
+
+const [filterApplied, setFilterApplied] = useState("")
+
+// Fungsi untuk menangani perubahan input
+const handleDateChange = (event, type) => {
+  if (type === "from") {
+    setFromDate(event.target.value);
+  } else if (type === "to") {
+    setToDate(event.target.value);
+  }
+};
+
+// Fungsi saat tombol Apply Filter diklik
+const applyFilter = () => {
+  
+  setFilterApplied(true); // Trigger update di PieChart
+  console.log("📅 Filter Applied:", {filterApplied, fromDate, toDate });
+};
 
   return (
     <AuthProvider>
@@ -202,7 +226,9 @@ useEffect(() => {
               </div>
               <div>
                 <h3 className="text-xl font-medium text-gray-500">App Score</h3>
-                <p className="text-3xl font-medium text-gray-800 mt-2">{appDetail["App Score"]}</p>
+                <p className="text-3xl font-medium text-gray-800 mt-2">
+                {appDetail?.["App Score"] ? Number(appDetail["App Score"]).toPrecision(3) : "No Data"}
+                  </p>
               </div>
             </div>
             <div className="bg-white p-4 flex items-center rounded-lg shadow-sm border border-gray-100">
@@ -219,14 +245,18 @@ useEffect(() => {
 
         <div className="border-b border-[#717171] my-6"></div>
         <div className="flex justify-end items-end mb-7">
-          {/* <button className="bg-[#1BB8B3] text-white text-base font-semibold py-3.5 px-7 rounded-xl">Hallo</button> */}
-          {/* <FilterDropdown className="w-auto" versions={versions} onApplyFilters={handleApplyFilters} /> */}
           <div className="block mr-4">
             <div>
               <label className="text-[#666666] text-xl mb-1.5" for="From">From</label>
             </div>
             <div>
-              <input className="w-72 text-[#888888] border-1 border-[#888888] p-3 rounded-lg" type="date" id="birthday" name="birthday"></input>
+              <input
+              className="w-72 text-[#888888] border-1 border-[#888888] p-3 rounded-lg"
+              type="date"
+              id="from"
+              value={fromDate}
+              onChange={(e) => handleDateChange(e, "from")}
+            />            
             </div>
           </div>
           <div className="block mr-6">
@@ -234,12 +264,18 @@ useEffect(() => {
               <label className="text-[#666666] text-xl mb-1.5" for="To">To</label>
             </div>
             <div>
-              <input className="w-72 text-[#888888] border-1 border-[#888888] p-3 rounded-lg" type="date" id="birthday" name="birthday"></input>
+              <input
+              className="w-72 text-[#888888] border-1 border-[#888888] p-3 rounded-lg"
+              type="date"
+              id="to"
+              value={toDate}
+              onChange={(e) => handleDateChange(e, "to")}
+            />            
             </div>
           </div>
           <div >
-            <button className="bg-[#1BB8B3] text-white px-14 py-3 text-lg font-medium rounded-xl">
-                Apply
+            <button onClick={applyFilter} className = "bg-[#1BB8B3] hover:bg-[#70F2EE] text-white px-14 py-3 text-lg font-medium rounded-xl">
+                Apply Filter
             </button>
           </div>
         </div>
@@ -249,21 +285,35 @@ useEffect(() => {
           <div className="bg-white p-6 rounded-lg col-span-2 shadow-sm">
             <h2 className="text-3xl font-bold mb-4 text-[#13A09B]">Sentiment Over Time</h2>
             {/* <div className="h-64 bg-gray-100 rounded animate-pulse"></div> */}
-            <TimeSeriesChart/>
+            {/* <TimeSeriesChart/> */}
+            <TimeSeriesChart
+                  fromDate={filterApplied ? fromDate : undefined} 
+                  toDate={filterApplied ? toDate : undefined} 
+            />
           </div>
 
           {/* Filter and Bars */}
           <div className="space-y-6">
             {/* <div className="bg-white p-6 rounded-lg shadow-sm rid "> */}
 
-            <BarChart data={barChartData} />
+            {/* <BarChart data={barChartData} /> */}
+            <BarChart data={barChartData}
+                  fromDate={filterApplied ? fromDate : undefined} 
+                  toDate={filterApplied ? toDate : undefined} 
+            />
             {/* </div> */}
 
             {/* Pie Chart Placeholder */}
             {/* <div className="bg-white p-6 rounded-lg shadow-sm"> */}
               {/* <h2 className="text-lg font-semibold mb-4">Distribusi sentiment</h2> */}
               {/* <div className="h-48 bg-gray-100 rounded-full animate-pulse"></div> */}
-              <PieChart />
+              {/* <PieChart fromDate={fromDate} toDate={toDate} />
+               */}
+               <PieChart 
+                  fromDate={filterApplied ? fromDate : undefined} 
+                  toDate={filterApplied ? toDate : undefined} 
+                />
+
             {/* </div> */}
           </div>
         </div>
@@ -288,7 +338,7 @@ useEffect(() => {
           </div>
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className='flex'>
-              <h2 className="text-4xl text-[#14AE5C] font-medium mb-4 mr-2">Positive</h2>
+              <h2 className="text-4xl text-[#1BB8B3] font-medium mb-4 mr-2">Positive</h2>
               <h2 className="text-4xl text-[#666666] font-medium mb-4">Wordcloud</h2>      
             </div>
             <WordCloud
@@ -308,7 +358,10 @@ useEffect(() => {
         <div className="bg-white py-11 px-36 rounded-lg shadow-sm">
           <h2 className="text-4xl text-[#888888] font-bold mb-4">Highlighted Comment</h2>
           <div className="overflow-x-auto">
-          <TableComponent />
+          <TableComponent
+                  from={filterApplied ? fromDate : undefined} 
+                  to={filterApplied ? toDate : undefined} 
+                />
           </div>
         </div>
         </div>

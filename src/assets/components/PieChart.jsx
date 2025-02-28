@@ -3,7 +3,7 @@ import Plot from "react-plotly.js";
 import { useAuth } from "../../AuthContext";
 import { fetchSentimentDistribution } from "../../api/restApi";
 
-const PieChart = () => {
+const PieChart = ({ fromDate, toDate }) => {
   const [data, setData] = useState([]);
   const {user} = useAuth()
 
@@ -15,7 +15,7 @@ const PieChart = () => {
       }
 
       try {
-        const jsonData = await fetchSentimentDistribution(user.token);
+        const jsonData = await fetchSentimentDistribution(user.token, fromDate, toDate);
         if (!jsonData) return;
 
         const totalPositive = jsonData
@@ -48,7 +48,7 @@ const PieChart = () => {
     };
 
     fetchData();
-  }, [user?.token]);
+  }, [user?.token, fromDate, toDate]); 
 
   return (
     <div className="bg-white p-6 shadow-md rounded-md w-full flex flex-col items-center">

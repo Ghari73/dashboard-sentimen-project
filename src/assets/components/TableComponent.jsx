@@ -2,6 +2,7 @@
 import '../styles/TableComponent.css'; // Import CSS file
 import React, { useState, useEffect } from 'react';
 import { fetchPriorityReviews } from '../../api/restApi';
+import {Search, ArrowLeft, ArrowRight} from 'lucide-react';
 
 const TableComponent = () => {
   const [reviews, setReviews] = useState([]);
@@ -10,7 +11,7 @@ const TableComponent = () => {
   const [searchKeyword, setSearchKeyword] = useState('');
   const pageSize = 10;
   const [hasNextPage, setHasNextPage] = useState(true); // State baru
-
+  const [totalPages, setTotalPages] = useState()
   // Tambahkan state totalItems
 const [totalItems, setTotalItems] = useState(0);
 
@@ -24,8 +25,9 @@ useEffect(() => {
       const data = await fetchPriorityReviews(offset, searchKeyword);
       
       // Cek apakah data yang diterima kurang dari pageSize (artinya sudah halaman terakhir)
-      setHasNextPage(data.length === pageSize);
-      setReviews(data);
+      setHasNextPage(data.currentPage !== data.totalPages);
+      setReviews(data.data);
+      setTotalPages(data.totalPages)
     } catch (error) {
       console.error("❌ Error:", error);
     } finally {
@@ -37,7 +39,7 @@ useEffect(() => {
 }, [page, searchKeyword]);
 
 // Hitung total halaman
-const totalPages = Math.ceil(totalItems / pageSize);
+// const totalPages = Math.ceil(totalItems / pageSize);
 
 // Kondisi tombol
 const isNextDisabled = page >= totalPages;
@@ -58,99 +60,97 @@ const handleSearch = (e) => {
   setSearchKeyword(e.target.value);
   setPage(1); // Reset ke halaman 1 saat search
 };
-  
-  useEffect(() => {
-      const fetchData = async () => {
-          try {
-              setLoading(true);
-              const offset = (page - 1) * pageSize;
-              const data = await fetchPriorityReviews(offset, searchKeyword);
-              setReviews(data);
-
-              // Hitung total pages berdasarkan jumlah data yang diterima
-              if (data.length < pageSize) {
-                  setTotalPages(page);
-              }
-          } catch (error) {
-              console.error("Error fetching reviews:", error);
-          } finally {
-              setLoading(false);
-          }
-      };
-
-      fetchData();
-  }, [page, searchKeyword]);
 
   return (
-      <div>
-          {/* Search Bar */}
-          <div className="search-container">
-  <input
-    type="text"
-    placeholder="Search..."
-    value={searchKeyword}
-    onChange={handleSearch}
-    className="search-input"
-  />
-  <div className="search-icon">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0z"/>
-    </svg>
-  </div>
-</div>
+    <div className="p-6">
+      {/* Search Bar */}
+      <div className="flex justify-end mb-4">
+        <div className="relative w-64">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchKeyword}
+            onChange={handleSearch}
+            className="border border-gray-300 rounded-lg py-2 pl-4 pr-10 w-full focus:outline-none focus:ring-2 focus:ring-gray-400"
+          />
+          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={20} />
 
-          {/* Loading State */}
-          {loading && <div>Loading...</div>}
+        </div>
+      </div>
 
-          {/* Table */}
-          <table className="review-table">
-              <thead>
-                  <tr>
-                      <th>Review Id</th>
-                      <th>Comment</th>
-                      <th>Rating</th>
-                      <th>Date</th>
-                      <th>Relevance</th>
-                      <th>Sentiment</th>
-                      <th>App Version</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  {reviews.map(review => (
-                      <tr key={review.reviewId}>
-                          <td>{review.reviewId}</td>
-                          <td>{review.content}</td>
-                          <td>{review.score}</td>
-                          <td>{new Date(review.at).toLocaleDateString()}</td>
-                          <td>{review.thumbsUpCount}</td>
-                          <td>{review.sentiment === "1" ? "positive" : "negative"}</td>
-                          <td>{review.appVersion}</td>
-                      </tr>
-                  ))}
-              </tbody>
-          </table>
+      {/* Loading State */}
+      {loading && <div className="text-center text-gray-600">Loading...</div>}
 
-          {/* Pagination */}
-      <div className="pagination">
-        <button 
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse border border-gray-300">
+          <thead className="bg-gray-200 text-gray-700">
+            <tr className="text-center">
+              <th className="p-3 border border-gray-300">Review Id</th>
+              <th className="p-3 border border-gray-300">Comment</th>
+              <th className="p-3 border border-gray-300">Rating</th>
+              <th className="p-3 border border-gray-300">Date</th>
+              <th className="p-3 border border-gray-300">Relevance</th>
+              <th className="p-3 border border-gray-300">Sentiment</th>
+              <th className="p-3 border border-gray-300">App Version</th>
+            </tr>
+          </thead>
+          <tbody>
+            {reviews?.length > 0 ? (
+              reviews.map((review) => (
+                <tr key={review.reviewId} className="text-center bg-white hover:bg-gray-100">
+                  <td className="p-3 border border-gray-300">{review.reviewId}</td>
+                  <td className="p-3 border border-gray-300 text-left">{review.content}</td>
+                  <td className="p-3 border border-gray-300">{review.score}</td>
+                  <td className="p-3 border border-gray-300">{new Date(review.at).toISOString().split("T")[0]}</td>
+                  <td className="p-3 border border-gray-300">{review.thumbsUpCount || "-"}</td>
+                  <td className="p-3 border border-gray-300">
+                    {review.sentiment === "1" ? "positive" : "negative"}
+                  </td>
+                  <td className="p-3 border border-gray-300">{review.appVersion}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7" className="p-3 text-center border border-gray-300">
+                  No Data Available
+                </td>
+              </tr>
+            )}
+          </tbody>
+          
+        </table>
+      </div>
+
+      {/* Pagination */}
+
+      <div className="flex items-center justify-between mt-4">
+        {/* Tombol Previous */}
+        <button
           onClick={handlePrev}
           disabled={page === 1}
-          className="pagination-button"
-          style={{ backgroundColor: page === 1 ? '#cccccc' : '#0E8783' }}
+          className={`w-[120px] h-[50px] px-4 py-2 rounded-lg text-white text-center flex items-center justify-center gap-2 
+            ${page === 1 ? "bg-gray-400 cursor-not-allowed" : "bg-teal-600 hover:bg-teal-700"}`}
         >
+          <ArrowLeft size={18} />
           Previous
         </button>
-        <span className="page-info">Page {page}</span>
-        <button 
+
+        {/* Info Halaman */}
+        <span className="text-gray-700">Page {page} of {totalPages}</span>
+
+        {/* Tombol Next */}
+        <button
           onClick={handleNext}
           disabled={!hasNextPage}
-          className="pagination-button"
-          style={{ backgroundColor: !hasNextPage ? '#cccccc' : '#0E8783' }}
+          className={`w-[120px] h-[50px] px-4 py-2 rounded-lg text-white text-center flex items-center justify-center gap-2 
+            ${!hasNextPage ? "bg-gray-400 cursor-not-allowed" : "bg-teal-600 hover:bg-teal-700"}`}
         >
           Next
+          <ArrowRight size={18} />
         </button>
       </div>
-      </div>
+    </div>
   );
 };
 
