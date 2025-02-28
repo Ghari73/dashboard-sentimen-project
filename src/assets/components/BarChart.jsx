@@ -69,8 +69,7 @@ const BarChart = ({ fromDate, toDate }) => {
             yaxis: {
               title: "Frequency",
               tickmode: "linear",
-              dtick: 1000, // Supaya angka di sumbu Y muncul dengan interval yang pas
-              dtick: 1000, // Supaya angka di sumbu Y muncul dengan interval yang pas
+              dtick: 200, // Supaya angka di sumbu Y muncul dengan interval yang pas
               showline: true, // Menampilkan garis utama sumbu Y
               zeroline: true,
             },

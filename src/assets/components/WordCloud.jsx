@@ -64,7 +64,7 @@ const WordCloud = ({ words, options }) => {
     };
 
     return (
-        <div style={{ width: "100%", height: "600px", overflow: "hidden" }}>
+        <div style={{ width: "100%", height: "1200px", overflow: "hidden" }}>
             <canvas ref={chartRef} style={{ width: "100%", height: "100%" }} />
         </div>
     );

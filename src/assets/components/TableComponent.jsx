@@ -89,7 +89,7 @@ const handleSearch = (e) => {
               <th className="p-3 border border-gray-300">Review Id</th>
               <th className="p-3 border border-gray-300">Comment</th>
               <th className="p-3 border border-gray-300">Rating</th>
-              <th className="p-3 border border-gray-300">Date</th>
+              <th className="p-3 border border-gray-300 w-28">Date</th>
               <th className="p-3 border border-gray-300">Relevance</th>
               <th className="p-3 border border-gray-300">Sentiment</th>
               <th className="p-3 border border-gray-300">App Version</th>

@@ -78,8 +78,13 @@ useEffect(() => {
   useEffect(() => {
     const getData = async () => {
       try {
-        const data = await fetchSentimentCloud(fromDate, toDate); // Panggil fungsi
-        setWordData(data); // Update state
+        const data = await fetchSentimentCloud(fromDate, toDate); 
+        setWordData((prevData) => {
+          if (JSON.stringify(prevData) === JSON.stringify(data)) {
+            return prevData; // Jika sama, jangan update state
+          }
+          return data; // Jika beda, baru update state
+        });
       } catch (error) {
         console.error(error.message);
       }
